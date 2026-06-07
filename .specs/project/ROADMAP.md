@@ -1,7 +1,7 @@
-# Roadmap
+# PRUMO — Roadmap
 
 **Current Milestone:** MVP v1.0
-**Status:** Planning
+**Status:** In Progress — M1 Autenticação
 
 ---
 
@@ -12,7 +12,7 @@
 
 ### Features
 
-**M1 — Autenticação** - PLANNED
+**M1 — Autenticação** - DONE (2026-06-07)
 
 - Cadastro com email + senha (RF-01)
 - Slot para Google OAuth preparado (RF-02)
@@ -20,7 +20,7 @@
 - Workspace criado automaticamente no cadastro (RF-06)
 - Sessões com JWT 7 dias + refresh 30 dias (RF-05, RNF-06)
 
-**M2 — Obras** - PLANNED
+**M2 — Obras** - IN PROGRESS
 
 - CRUD completo de obras com campos opcionais (RF-07, RF-08)
 - Controle de status: Planejamento → Em execução → Concluída / Pausada (RF-09)

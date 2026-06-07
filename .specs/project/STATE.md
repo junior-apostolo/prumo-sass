@@ -1,11 +1,49 @@
 # State
 
-**Last Updated:** 2026-06-05
-**Current Work:** Fase 0 concluída — monorepo funcionando, aguardando DATABASE_URL para migrations (T-008–T-016)
+**Last Updated:** 2026-06-07
+**Current Work:** M2 — Obras. M1 concluído e testado (Insomnia + frontend end-to-end).
+
+---
+
+## Completed Milestones
+
+### M1 — Autenticação (concluído 2026-06-07)
+
+**API (Fastify):**
+- `POST /auth/register` — cria usuário + workspace + refresh token em transação
+- `POST /auth/login` — valida credenciais, emite access + refresh token
+- `POST /auth/refresh` — renova access token via refresh token
+- `POST /auth/logout` — revoga refresh token (requer Bearer)
+- `POST /auth/forgot-password` — gera token de reset (logado no console — B-002)
+- `POST /auth/reset-password` — redefine senha + revoga todas as sessões
+- `GET /users/me` — retorna perfil do usuário autenticado (requer Bearer)
+- Swagger UI disponível em `GET /docs`
+
+**Frontend (Next.js):**
+- Páginas: `/login`, `/register`, `/forgot-password`, `/reset-password`
+- Route handlers BFF: `/api/auth/login`, `/api/auth/logout`, `/api/auth/me`, `/api/auth/refresh`
+- `AuthProvider` com contexto global de usuário + `setApiToken` para chamadas autenticadas
+- Middleware de proteção de rotas: redireciona para `/login` se não autenticado; para `/dashboard` se já logado e acessar rota pública de auth
+- Dashboard shell com header (nome do usuário + botão "Sair" com redirect para `/login`)
+- Tokens armazenados em httpOnly cookies (`prumo_token`, `prumo_refresh`)
+
+**Infra:**
+- `docker-compose.yml` para Postgres 16 local
+- `packages/db/prisma/schema.prisma` com modelos `RefreshToken` e `PasswordResetToken`
+- Migration aplicada localmente
 
 ---
 
 ## Recent Decisions (Last 60 days)
+
+### AD-009: Nome do produto definido como PRUMO (2026-06-06)
+
+**Decision:** O produto se chama **PRUMO**.
+**Reason:** Nome escolhido pelo fundador — referência a "prumo" da construção civil (verticalidade, precisão), alinhado ao público-alvo da plataforma.
+**Trade-off:** Nenhum.
+**Impact:** Resolve B-001. Desbloqueia: registro de domínio, Google OAuth, branding da landing page, configuração do Vercel com domínio customizado (T-127).
+
+---
 
 ### AD-001: Monorepo com Turborepo (2026-06-05)
 
@@ -67,12 +105,9 @@
 
 ## Active Blockers
 
-### B-001: Nome do produto (DA-01) não definido
+### ~~B-001: Nome do produto (DA-01)~~ — RESOLVIDO (2026-06-06)
 
-**Discovered:** 2026-06-05
-**Impact:** Bloqueia: registro de domínio, configuração de Google OAuth, branding da landing page, configuração do Vercel com domínio customizado (T-127).
-**Workaround:** Deploy em subdomínio do Vercel/Railway durante desenvolvimento.
-**Resolution:** Decidir nome antes de iniciar Fase 6 (deploy + landing page).
+**Nome definido: PRUMO.** Ver AD-009.
 
 ### B-002: Estratégia de email transacional (DA-05) não decidida
 

@@ -1,4 +1,4 @@
-# Plataforma de Gestão de Obras
+# PRUMO — Plataforma de Gestão de Obras
 
 **Vision:** microSaaS web para engenheiros, empreiteiros e prestadores de serviço da construção civil gerenciarem obras, gerarem orçamentos profissionais e controlarem gastos — simples o suficiente para funcionar sem treinamento.
 
