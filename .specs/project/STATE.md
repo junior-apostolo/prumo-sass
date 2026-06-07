@@ -1,11 +1,28 @@
 # State
 
 **Last Updated:** 2026-06-07
-**Current Work:** M2 — Obras. M1 concluído e testado (Insomnia + frontend end-to-end).
+**Current Work:** M2 — Obras. M1 e LP concluídos.
 
 ---
 
 ## Completed Milestones
+
+### LP — Landing Page (concluído 2026-06-07)
+
+**Frontend (Next.js):**
+- Rota `/` pública: mostra landing para usuário não autenticado, redireciona para `/dashboard` se autenticado
+- 9 seções: Navbar · Hero · Problema · Features · Como Funciona · Pricing · FAQ · CTA Final · Footer
+- `components/landing/hero-headline.tsx` — animação de palavras em loop com `motion` v12 (`useAnimation` + stagger + exit reverso)
+- `components/landing/animate-in.tsx` — wrapper com IntersectionObserver para fade-up nas seções
+- Fonte Inter aplicada globalmente via `next/font/google`
+- `middleware.ts` atualizado para tratar `/` como rota pública
+
+**Decisões:**
+- `motion` v12 (não Framer Motion legacy) — import via `motion/react`
+- `AnimateIn` usa CSS transitions (sem JS no runtime após mount) — melhor performance que motion em cada elemento
+- Badge "Mais popular" movido para wrapper externo ao `Card` para evitar clip do `overflow-hidden`
+
+---
 
 ### M1 — Autenticação (concluído 2026-06-07)
 

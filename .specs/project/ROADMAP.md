@@ -57,6 +57,18 @@
 - Middleware de API: cors, helmet, rate limiting, error handler
 - shadcn/ui configurado com componentes base
 
+**LP — Landing Page** - DONE (2026-06-07)
+
+- Navbar sticky com logo e CTA "Começar grátis"
+- Hero com headline animada em loop (motion v12, palavra-a-palavra)
+- Seção de dor: os 3 problemas que o PRUMO resolve
+- Seção de features: Obras, Orçamentos PDF, Controle Financeiro
+- Como funciona: 3 passos visuais
+- Pricing: Gratuito vs Pro (R$ 89/mês) com badge "Mais popular"
+- FAQ: 5 perguntas com `<details>` nativo
+- CTA final + Footer com links e legal
+- Fonte Inter globalmente; animações de scroll com IntersectionObserver (`AnimateIn`)
+
 **Fase 6 — Polish e lançamento** - PLANNED
 
 - Validação de input com Zod em todos os endpoints
