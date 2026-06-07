@@ -1,8 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("token");
+let _token: string | null = null;
+
+export function setApiToken(token: string | null) {
+  _token = token;
 }
 
 type RequestOptions = {
@@ -12,13 +13,11 @@ type RequestOptions = {
 };
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const token = getToken();
-
   const res = await fetch(`${API_URL}${path}`, {
     method: options.method ?? "GET",
     headers: {
       "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(_token ? { Authorization: `Bearer ${_token}` } : {}),
       ...options.headers,
     },
     body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
