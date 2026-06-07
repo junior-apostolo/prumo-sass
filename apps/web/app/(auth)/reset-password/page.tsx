@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -23,7 +30,9 @@ export default function ResetPasswordPage() {
       <Card>
         <CardHeader>
           <CardTitle>Link inválido</CardTitle>
-          <CardDescription>Este link de redefinição é inválido ou expirou.</CardDescription>
+          <CardDescription>
+            Este link de redefinição é inválido ou expirou.
+          </CardDescription>
         </CardHeader>
         <CardFooter>
           <Link href="/forgot-password" className="text-sm hover:underline">
@@ -42,11 +51,14 @@ export default function ResetPasswordPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"}/auth/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, password }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001"}/auth/reset-password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token, password }),
+        }
+      );
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Erro ao redefinir senha");
@@ -54,7 +66,9 @@ export default function ResetPasswordPage() {
       toast.success("Senha redefinida com sucesso!");
       router.push("/login");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao redefinir senha");
+      toast.error(
+        err instanceof Error ? err.message : "Erro ao redefinir senha"
+      );
     } finally {
       setLoading(false);
     }
@@ -102,5 +116,13 @@ export default function ResetPasswordPage() {
         </CardFooter>
       </form>
     </Card>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
