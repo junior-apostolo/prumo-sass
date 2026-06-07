@@ -1,8 +1,13 @@
+import "dotenv/config";
 import Fastify, { type FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
 import multipart from "@fastify/multipart";
+import swagger from "@fastify/swagger";
+import swaggerUi from "@fastify/swagger-ui";
+import { authRoutes } from "./routes/auth.js";
+import { userRoutes } from "./routes/users.js";
 
 async function build() {
   const app = Fastify({
@@ -16,6 +21,39 @@ async function build() {
   });
 
   // ─── Plugins ──────────────────────────────────────────────────────────────
+
+  await app.register(swagger, {
+    openapi: {
+      openapi: "3.0.0",
+      info: {
+        title: "PRUMO API",
+        description:
+          "API para gerenciamento de obras — cadastro, orçamentos e controle financeiro",
+        version: "0.1.0",
+      },
+      servers: [{ url: "http://localhost:3001", description: "Desenvolvimento" }],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+            description: "Access token retornado pelo login ou refresh",
+          },
+        },
+      },
+      tags: [
+        { name: "Auth", description: "Autenticação e gerenciamento de sessões" },
+        { name: "Users", description: "Dados do usuário autenticado" },
+      ],
+    },
+  });
+
+  await app.register(swaggerUi, {
+    routePrefix: "/docs",
+    uiConfig: { docExpansion: "list", deepLinking: true, persistAuthorization: true },
+    staticCSP: true,
+  });
 
   await app.register(helmet, { contentSecurityPolicy: false });
 
@@ -33,6 +71,11 @@ async function build() {
     limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
   });
 
+  // ─── Routes ──────────────────────────────────────────────────────────────
+
+  await app.register(authRoutes);
+  await app.register(userRoutes);
+
   // ─── Health check ────────────────────────────────────────────────────────
 
   app.get("/health", async (_req, reply) => {
@@ -43,6 +86,9 @@ async function build() {
 
   app.setErrorHandler((error: FastifyError, _req, reply) => {
     app.log.error(error);
+    if (error.validation) {
+      return reply.code(400).send({ error: error.message });
+    }
     if (error.statusCode) {
       return reply.code(error.statusCode).send({ error: error.message });
     }
