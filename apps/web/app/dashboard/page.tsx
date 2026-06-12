@@ -1,18 +1,14 @@
 "use client";
 
-import { useAuth } from "@/components/providers/auth-provider";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const router = useRouter();
 
-  return (
-    <div className="flex flex-col gap-2">
-      <h1 className="text-2xl font-semibold tracking-tight">
-        Bem-vindo, {user?.name ?? "…"}
-      </h1>
-      <p className="text-muted-foreground">
-        Seu workspace está pronto. As obras estarão disponíveis em breve.
-      </p>
-    </div>
-  );
+  useEffect(() => {
+    router.replace("/dashboard/obras");
+  }, [router]);
+
+  return null;
 }
