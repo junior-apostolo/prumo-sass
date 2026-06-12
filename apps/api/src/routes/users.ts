@@ -1,8 +1,10 @@
 import type { FastifyInstance } from "fastify";
-import { prisma } from "@enge-pro/db";
 import { authenticate } from "../middlewares/authenticate.js";
+import { UserRepository } from "../repositories/user.repository.js";
 
 export async function userRoutes(app: FastifyInstance) {
+  const userRepo = new UserRepository();
+
   app.get(
     "/users/me",
     {
@@ -28,28 +30,18 @@ export async function userRoutes(app: FastifyInstance) {
               },
             },
           },
-          401: {
-            description: "Não autorizado",
-            type: "object",
-            properties: { error: { type: "string" } },
-          },
-          404: {
-            description: "Usuário não encontrado",
-            type: "object",
-            properties: { error: { type: "string" } },
-          },
+          401: { description: "Não autorizado", type: "object", properties: { error: { type: "string" } } },
+          404: { description: "Usuário não encontrado", type: "object", properties: { error: { type: "string" } } },
         },
       },
     },
     async (req, reply) => {
-      const user = await prisma.user.findUnique({
-        where: { id: req.user.id },
-        select: { id: true, name: true, email: true, workspaceId: true, role: true },
-      });
-
+      const user = await userRepo.findById(req.user.id);
       if (!user) return reply.code(404).send({ error: "Usuário não encontrado" });
 
-      return reply.send({ user });
-    }
+      return reply.send({
+        user: { id: user.id, name: user.name, email: user.email, workspaceId: user.workspaceId, role: user.role },
+      });
+    },
   );
 }
