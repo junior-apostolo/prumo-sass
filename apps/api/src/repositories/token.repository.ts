@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { prisma } from "@enge-pro/db";
+import { prisma } from "../lib/prisma";
 import { generateRefreshToken, refreshTokenExpiresAt } from "../lib/jwt.js";
 import type {
   IRefreshTokenRepository,

@@ -1,4 +1,4 @@
-import { prisma } from "@enge-pro/db";
+import { prisma } from "../lib/prisma";
 import type { IUserRepository, UserRecord, CreateUserData } from "../interfaces/auth.interfaces.js";
 
 export class UserRepository implements IUserRepository {
