@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-06-07
-**Current Work:** M2 — Obras. M1 e LP concluídos.
+**Last Updated:** 2026-06-12
+**Current Work:** M3 — Orçamentos. M1, LP e M2 concluídos. Fase 3a (demo pública) concluída.
 
 ---
 
@@ -51,7 +51,77 @@
 
 ---
 
+### M2 — Obras (concluído 2026-06-12)
+
+**API (Fastify):**
+- `GET /obras` — lista obras não arquivadas do workspace com totais calculados
+- `POST /obras` — cria obra com campos opcionais
+- `GET /obras/:id` — detalhe com resumo financeiro (totalOrcado, totalGasto, saldo, percentualConsumido)
+- `PUT /obras/:id` — edita campos da obra
+- `PATCH /obras/:id/status` — altera status (PLANEJAMENTO → EM_EXECUCAO → PAUSADA / CONCLUIDA)
+- `DELETE /obras/:id` — arquiva obra via soft delete (seta `archivedAt`)
+- Todos os endpoints com `authenticate` middleware + filtro por `workspaceId` em todas as queries
+
+**Frontend (Next.js):**
+- `/dashboard/obras` — listagem com cards, barra de progresso e badge "Atenção" quando >80% consumido
+- `/dashboard/obras/nova` — formulário de criação com campos opcionais
+- `/dashboard/obras/[id]` — 4 cards financeiros (contratado / orçado / gasto / saldo), dropdown de status, AlertDialog de confirmação antes de arquivar
+- `/dashboard/obras/[id]/editar` — formulário pré-preenchido
+- `components/obras/obra-status-badge.tsx` — badge reutilizável com cores por status
+- Dashboard home (`/dashboard`) redireciona para `/dashboard/obras`
+- Nav do dashboard com link "Obras" ativo por pathname
+
+**Decisões:**
+- Totais financeiros calculados em runtime no repository (não armazenados) — via aggregate dos gastos e itens de orçamentos aprovados
+- `Decimal` do Prisma serializado como `string` na API e parseado no frontend
+
+---
+
+---
+
+### M3 — Orçamentos / Fase 3a — Demo Pública (concluído 2026-06-12)
+
+**API (Fastify):**
+- `POST /demo/pdf` — endpoint público (sem auth), recebe payload do wizard, gera e retorna PDF binário
+- Validação com Zod antes da renderização
+- `@react-pdf/renderer` instalado em `apps/api`; template em `src/pdf/orcamento-demo.tsx`
+- Suporta dois modos: `wizard` (itens itemizados) e `verba` (preço fechado global)
+
+**Frontend (Next.js):**
+- `/demo` — rota pública (adicionada ao middleware), sem autenticação
+- Wizard de 5 passos + preview: Ofício → Prestador → Cliente → Serviços → Condições → PDF
+- Preços sugeridos editáveis por ofício em `lib/demo-precos.ts`
+- Modo "verba" para reparos com preço fechado dentro do passo de serviços
+- CTA pós-download: "Criar conta grátis" exibido após geração bem-sucedida
+- Hero da landing page atualizado: CTA principal → "Gerar orçamento grátis" apontando para `/demo`
+
+**Tipos compartilhados:**
+- `TipoOficio`, `DemoItemServico`, `DemoVerba`, `DemoWizardPayload` em `packages/shared`
+
+**Documentação:**
+- `docs/demo-orcamento.md` — guia didático com analogias explicando toda a feature
+
+---
+
 ## Recent Decisions (Last 60 days)
+
+### AD-011: React unificado em `^19` no monorepo (2026-06-12)
+
+**Decision:** `apps/api` usa `react@^19` (igual a `apps/web`), não `^18`.
+**Reason:** `@react-pdf/renderer` e `apps/web` usavam `react@19` da raiz. Com `react@18` instalado localmente em `apps/api`, havia duas instâncias de React em memória — símbolos JSX incompatíveis causavam `Cannot read properties of null (reading 'props')` no reconciliador do react-pdf.
+**Trade-off:** Nenhum para o uso atual (a API não usa React no browser, apenas para renderização de PDF no servidor).
+**Impact:** Ao adicionar qualquer dependência que use React em `apps/api`, garantir que seja compatível com React 19.
+
+---
+
+### AD-010: Formato de data `date` em vez de `date-time` nos body schemas (2026-06-12)
+
+**Decision:** Os campos `dataInicio` e `dataFim` nos body schemas do Fastify usam `format: "date"` (não `"date-time"`).
+**Reason:** O `<input type="date">` do HTML envia `"YYYY-MM-DD"`, que falha na validação `"date-time"` do Fastify antes de chegar ao Zod. O Zod já usa `z.coerce.date()` que aceita ambos os formatos.
+**Trade-off:** Nenhum.
+**Impact:** Aplicar o mesmo padrão em M3+ sempre que houver campos de data em formulários.
+
+---
 
 ### AD-009: Nome do produto definido como PRUMO (2026-06-06)
 
@@ -81,7 +151,7 @@
 **Decision:** shadcn@4 com biblioteca Radix e preset Nova (Geist + Lucide).
 **Reason:** Versão mais nova do shadcn com Tailwind v4. `toast` depreciado — usar `sonner` no lugar.
 **Trade-off:** API de alguns componentes ligeiramente diferente das versões anteriores.
-**Impact:** Toaster vem de `components/ui/sonner.tsx`, não de `components/ui/toast.tsx`.
+**Impact:** Toaster vem de `components/ui/sonner.tsx`, não de `components/ui/toast.tsx`. Componentes base-ui usam `render` prop em vez de `asChild`.
 
 ### AD-002: API REST separada do Next.js (2026-06-05)
 
@@ -137,7 +207,10 @@
 
 ## Lessons Learned
 
-_(vazio — projeto em início)_
+- **Campos de data em formulários HTML:** `<input type="date">` envia `"YYYY-MM-DD"`. Fastify valida antes do Zod — usar `format: "date"` (não `"date-time"`) nos body schemas da API. Ver AD-010.
+- **Componentes base-ui no shadcn:** Não suportam `asChild`. Usar `render={<Component />}` em vez de `asChild` em `DropdownMenuTrigger`, `AlertDialogTrigger` etc.
+- **Multiple React instances em monorepo + @react-pdf/renderer:** Instalar `react` em um workspace com versão diferente da raiz cria dois Reacts em memória. Os `Symbol()` JSX não coincidem e o reconciliador lança `Cannot read properties of null`. Solução: alinhar todas as versões de React no monorepo. Ver AD-011.
+- **`@react-pdf/renderer` e componente wrapper:** `renderToBuffer` espera o elemento `<Document>` diretamente. Ao passar `<MeuComponente />` (que retorna um Document), chamar o componente como função `MeuComponente({ payload })` antes de passar ao `renderToBuffer` evita que o reconciliador receba um tipo desconhecido.
 
 ---
 
@@ -158,7 +231,7 @@ _(nenhuma ainda)_
 
 ## Todos
 
-- [ ] Decidir nome do produto (DA-01) — desbloqueador para B-001
+- [x] Decidir nome do produto (DA-01) — RESOLVIDO
 - [ ] Decidir provedor de email (DA-05) — Resend recomendado — desbloqueador para B-002
 - [ ] Abrir conta no Railway e Vercel antes de iniciar Fase 6
 - [ ] Abrir conta no Cloudflare R2 ou AWS S3 antes de T-098 (upload de logo)

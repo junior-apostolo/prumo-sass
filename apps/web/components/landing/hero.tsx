@@ -31,19 +31,19 @@ export function Hero() {
         style={{ animationDelay: "280ms", opacity: 0 }}
       >
         <Link
-          href="/register"
+          href="/demo"
           className={cn(buttonVariants({ size: "lg" }), "px-8")}
         >
-          Criar conta grátis
+          Gerar orçamento grátis
         </Link>
         <Link
-          href="#como-funciona"
+          href="/register"
           className={cn(
             buttonVariants({ variant: "outline", size: "lg" }),
             "px-8"
           )}
         >
-          Ver como funciona
+          Criar conta
         </Link>
       </div>
 
@@ -51,7 +51,7 @@ export function Hero() {
         className="animate-fade-in mt-4 text-sm text-muted-foreground"
         style={{ animationDelay: "420ms", opacity: 0 }}
       >
-        Grátis para começar · Sem cartão de crédito · Cancele quando quiser
+        Sem cadastro · Sem cartão · PDF pronto em menos de 3 minutos
       </p>
     </section>
   );

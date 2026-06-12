@@ -95,3 +95,43 @@ export interface GastoDTO {
   comprovante?: string | null;
   createdAt: string;
 }
+
+// ─── Demo / Orçamento público ─────────────────────────────────────────────────
+
+export type TipoOficio =
+  | "PINTURA"
+  | "ELETRICA"
+  | "REVESTIMENTO"
+  | "HIDRAULICA"
+  | "OUTRO";
+
+export interface DemoItemServico {
+  descricao: string;
+  unidade: string;
+  quantidade: number;
+  valorUnitario: number;
+}
+
+export interface DemoVerba {
+  descricao: string;
+  valorTotal: number;
+}
+
+export interface DemoWizardPayload {
+  oficio: TipoOficio;
+  modoServico: "wizard" | "verba";
+  prestador: {
+    nome: string;
+    cpfCnpj?: string;
+    telefone?: string;
+  };
+  cliente: {
+    nome: string;
+    endereco?: string;
+  };
+  itens?: DemoItemServico[];
+  verba?: DemoVerba;
+  pagamento?: string;
+  validadeDias: number;
+  observacoes?: string;
+}

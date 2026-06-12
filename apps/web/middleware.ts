@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth/verify";
 
 const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password"];
+const PUBLIC_ROUTES = ["/demo"];
 const STATIC_PUBLIC_PREFIXES = ["/api/auth", "/_next", "/favicon.ico"];
 
 export async function middleware(req: NextRequest) {
@@ -10,6 +11,9 @@ export async function middleware(req: NextRequest) {
   if (STATIC_PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
+
+  const isPublicRoute = PUBLIC_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/"));
+  if (isPublicRoute) return NextResponse.next();
 
   const token = req.cookies.get("prumo_token")?.value;
   const isAuthenticated = token ? !!(await verifyToken(token)) : false;
