@@ -8,6 +8,7 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { authRoutes } from "./routes/auth.js";
 import { userRoutes } from "./routes/users.js";
+import { obrasRoutes } from "./routes/obras.js";
 
 async function build() {
   const app = Fastify({
@@ -45,6 +46,7 @@ async function build() {
       tags: [
         { name: "Auth", description: "Autenticação e gerenciamento de sessões" },
         { name: "Users", description: "Dados do usuário autenticado" },
+        { name: "Obras", description: "Gerenciamento de obras" },
       ],
     },
   });
@@ -75,6 +77,7 @@ async function build() {
 
   await app.register(authRoutes);
   await app.register(userRoutes);
+  await app.register(obrasRoutes);
 
   // ─── Health check ────────────────────────────────────────────────────────
 
