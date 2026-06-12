@@ -162,7 +162,7 @@ export default function ObraDetailPage() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Arquivar obra?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  A obra "{obra.nome}" será arquivada e não aparecerá mais na lista principal. Os dados
+                  A obra &quot;{obra.nome}&quot; será arquivada e não aparecerá mais na lista principal. Os dados
                   serão mantidos e você poderá consultá-los futuramente.
                 </AlertDialogDescription>
               </AlertDialogHeader>

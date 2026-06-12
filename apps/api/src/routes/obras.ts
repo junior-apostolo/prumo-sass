@@ -57,8 +57,8 @@ export async function obrasRoutes(app: FastifyInstance) {
             cliente: { type: "string" },
             endereco: { type: "string" },
             valorContrato: { type: "number", minimum: 0 },
-            dataInicio: { type: "string", format: "date-time" },
-            dataFim: { type: "string", format: "date-time" },
+            dataInicio: { type: "string", format: "date" },
+            dataFim: { type: "string", format: "date" },
           },
         },
         response: {
@@ -217,6 +217,7 @@ export async function obrasRoutes(app: FastifyInstance) {
     },
     async (req, reply) => {
       const { id } = req.params as { id: string };
+      console.log(`Request to archive obra ${id} from workspace ${req}`);
       try {
         await obraService.archive(id, req.user.workspaceId);
         return reply.code(204).send();
