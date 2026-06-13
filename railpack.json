@@ -1,0 +1,8 @@
+{
+  "build": {
+    "cmd": "npx turbo run build --filter=@enge-pro/api..."
+  },
+  "start": {
+    "cmd": "npx prisma migrate deploy --schema ./packages/db/prisma/schema.prisma && node apps/api/dist/app.js"
+  }
+}
