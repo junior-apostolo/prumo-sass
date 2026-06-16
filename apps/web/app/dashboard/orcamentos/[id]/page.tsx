@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Plus, Trash2, FileDown } from "lucide-react";
@@ -71,6 +71,9 @@ export default function OrcamentoEditorPage() {
   const [itens, setItens] = useState<ItemLocal[]>([]);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
 
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasLoaded = useRef(false);
+
   useEffect(() => {
     orcamentosApi
       .get(id)
@@ -86,6 +89,7 @@ export default function OrcamentoEditorPage() {
             valorUnitario: parseFloat(it.valorUnitario),
           }))
         );
+        hasLoaded.current = true;
       })
       .catch(() => {
         toast.error("Orçamento não encontrado");
@@ -147,10 +151,10 @@ export default function OrcamentoEditorPage() {
     setItens((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handleSaveItens() {
+  const saveItens = useCallback(async (itensParaSalvar: ItemLocal[]) => {
     setSaveStatus("saving");
     try {
-      const input = itens.map((item, i) => ({
+      const input = itensParaSalvar.map((item, i) => ({
         id: item.id,
         descricao: item.descricao,
         categoria: item.categoria,
@@ -169,12 +173,23 @@ export default function OrcamentoEditorPage() {
         }))
       );
       setSaveStatus("saved");
-      toast.success("Itens salvos");
     } catch {
       setSaveStatus("error");
       toast.error("Erro ao salvar itens");
     }
-  }
+  }, [id]);
+
+  useEffect(() => {
+    if (!hasLoaded.current) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    setSaveStatus("idle");
+    debounceRef.current = setTimeout(() => {
+      saveItens(itens);
+    }, 1000);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [itens, saveItens]);
 
   const subtotais = itens.reduce<Record<ItemCategoria, number>>(
     (acc, item) => {
@@ -379,7 +394,7 @@ export default function OrcamentoEditorPage() {
 
           <div className="flex items-center justify-between mt-4 pt-4 border-t">
             <div className="flex items-center gap-3">
-              <Button size="sm" onClick={handleSaveItens} disabled={saveStatus === "saving"}>
+              <Button size="sm" onClick={() => saveItens(itens)} disabled={saveStatus === "saving"}>
                 {saveStatus === "saving" ? "Salvando..." : "Salvar itens"}
               </Button>
               {saveStatus === "saving" && (
