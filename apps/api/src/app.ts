@@ -10,6 +10,7 @@ import { authRoutes } from "./routes/auth.js";
 import { userRoutes } from "./routes/users.js";
 import { obrasRoutes } from "./routes/obras.js";
 import { demoRoutes } from "./routes/demo.js";
+import { orcamentosRoutes } from "./routes/orcamentos.js";
 
 async function build() {
   const app = Fastify({
@@ -48,6 +49,7 @@ async function build() {
         { name: "Auth", description: "Autenticação e gerenciamento de sessões" },
         { name: "Users", description: "Dados do usuário autenticado" },
         { name: "Obras", description: "Gerenciamento de obras" },
+        { name: "Orçamentos", description: "Orçamentos vinculados a obras" },
         { name: "Demo", description: "Geração de orçamento público sem autenticação" },
       ],
     },
@@ -80,6 +82,7 @@ async function build() {
   await app.register(authRoutes);
   await app.register(userRoutes);
   await app.register(obrasRoutes);
+  await app.register(orcamentosRoutes);
   await app.register(demoRoutes);
 
   // ─── Health check ────────────────────────────────────────────────────────
