@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { DemoWizard } from "@/components/demo/wizard";
+import { DemoUsado } from "@/components/demo/demo-usado";
+import { DEMO_USADO_COOKIE } from "@/app/api/demo/pdf/route";
 
 export const metadata = {
   title: "Gerar orçamento grátis — PRUMO",
@@ -7,7 +10,10 @@ export const metadata = {
     "Crie um orçamento profissional em menos de 3 minutos. Sem cadastro, sem cartão.",
 };
 
-export default function DemoPage() {
+export default async function DemoPage() {
+  const cookieStore = await cookies();
+  const demoUsado = cookieStore.get(DEMO_USADO_COOKIE)?.value === "true";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Minimal header */}
@@ -39,16 +45,18 @@ export default function DemoPage() {
       {/* Hero banner */}
       <div className="bg-primary/5 border-b py-6 px-4 text-center">
         <h1 className="text-2xl font-bold tracking-tight">
-          Gere seu orçamento profissional agora
+          {demoUsado ? "Obrigado por experimentar o PRUMO!" : "Gere seu orçamento profissional agora"}
         </h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          Sem cadastro · Sem cartão · PDF pronto em menos de 3 minutos
+          {demoUsado
+            ? "Crie sua conta e tenha acesso a orçamentos ilimitados."
+            : "Sem cadastro · Sem cartão · PDF pronto em menos de 3 minutos"}
         </p>
       </div>
 
-      {/* Wizard */}
+      {/* Content */}
       <main className="mx-auto max-w-5xl px-4 py-10">
-        <DemoWizard />
+        {demoUsado ? <DemoUsado /> : <DemoWizard />}
       </main>
 
       {/* Footer */}

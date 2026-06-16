@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { gerarOrcamentoPdf, downloadBlob } from "@/lib/demo-api";
 import { OFICIO_LABELS } from "@/lib/demo-precos";
 import type { TipoOficio, DemoWizardPayload } from "@enge-pro/shared";
 import type { ServicoState } from "./step-servicos";
-import Link from "next/link";
 
 interface Props {
   oficio: TipoOficio;
@@ -22,8 +22,15 @@ function formatBRL(n: number): string {
 }
 
 export function Preview({ oficio, prestador, cliente, servicos, condicoes }: Props) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [gerado, setGerado] = useState(false);
+
+  useEffect(() => {
+    if (gerado) {
+      router.push("/#precos");
+    }
+  }, [gerado, router]);
 
   const itensAtivos =
     servicos.modo === "wizard"
@@ -132,37 +139,12 @@ export function Preview({ oficio, prestador, cliente, servicos, condicoes }: Pro
 
       <Button
         onClick={handleGerar}
-        disabled={loading}
+        disabled={loading || gerado}
         size="lg"
         className="w-full text-base"
       >
-        {loading ? "Gerando PDF…" : "⬇ Baixar orçamento em PDF"}
+        {loading ? "Gerando PDF…" : gerado ? "Redirecionando…" : "⬇ Baixar orçamento em PDF"}
       </Button>
-
-      {gerado && (
-        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-center">
-          <p className="font-semibold text-sm">PDF gerado com sucesso!</p>
-          <p className="text-sm text-muted-foreground mt-1 mb-3">
-            Gostou? Crie sua conta grátis e salve todos os seus orçamentos.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-2 justify-center">
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              Criar conta grátis
-            </Link>
-            <button
-              type="button"
-              onClick={handleGerar}
-              disabled={loading}
-              className="inline-flex items-center justify-center rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted transition-colors"
-            >
-              Baixar novamente
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
