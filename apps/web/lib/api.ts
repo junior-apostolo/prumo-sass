@@ -32,6 +32,22 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return res.json();
 }
 
+async function requestBlob(path: string): Promise<Blob> {
+  const res = await fetch(`${API_URL}${path}`, {
+    method: "GET",
+    headers: {
+      ...(_token ? { Authorization: `Bearer ${_token}` } : {}),
+    },
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new ApiError(res.status, err.error ?? "Erro desconhecido", err.details);
+  }
+
+  return res.blob();
+}
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -49,4 +65,5 @@ export const api = {
   put: <T>(path: string, body: unknown) => request<T>(path, { method: "PUT", body }),
   patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
+  blob: (path: string) => requestBlob(path),
 };
