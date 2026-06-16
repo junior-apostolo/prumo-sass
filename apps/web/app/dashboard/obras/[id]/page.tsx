@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Pencil, Archive } from "lucide-react";
+import { Pencil, Archive, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ObraStatusBadge } from "@/components/obras/obra-status-badge";
+import { OrcamentoStatusBadge } from "@/components/orcamentos/orcamento-status-badge";
 import { obrasApi, type ObraComResumo, type ObraStatus } from "@/lib/obras";
+import { orcamentosApi, type OrcamentoDTO } from "@/lib/orcamentos";
 
 const STATUS_OPTIONS: { value: ObraStatus; label: string }[] = [
   { value: "PLANEJAMENTO", label: "Planejamento" },
@@ -51,6 +53,8 @@ export default function ObraDetailPage() {
   const [obra, setObra] = useState<ObraComResumo | null>(null);
   const [loading, setLoading] = useState(true);
   const [archiving, setArchiving] = useState(false);
+  const [orcamentos, setOrcamentos] = useState<OrcamentoDTO[]>([]);
+  const [loadingOrcamentos, setLoadingOrcamentos] = useState(true);
 
   useEffect(() => {
     obrasApi
@@ -62,6 +66,14 @@ export default function ObraDetailPage() {
       })
       .finally(() => setLoading(false));
   }, [id, router]);
+
+  useEffect(() => {
+    orcamentosApi
+      .list(id)
+      .then(setOrcamentos)
+      .catch(() => {})
+      .finally(() => setLoadingOrcamentos(false));
+  }, [id]);
 
   async function handleStatusChange(status: ObraStatus) {
     if (!obra) return;
@@ -229,6 +241,51 @@ export default function ObraDetailPage() {
             <p className="text-xl font-semibold">{formatCurrency(obra.saldo)}</p>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Orçamentos</h2>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => router.push(`/dashboard/obras/${obra.id}/orcamentos/nova`)}
+          >
+            <Plus className="w-4 h-4 mr-1.5" />
+            Novo orçamento
+          </Button>
+        </div>
+
+        {loadingOrcamentos ? (
+          <div className="flex flex-col gap-2">
+            <div className="h-10 bg-muted animate-pulse rounded" />
+            <div className="h-10 bg-muted animate-pulse rounded" />
+          </div>
+        ) : orcamentos.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nenhum orçamento ainda. Crie o primeiro.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {orcamentos.map((orc) => (
+              <div
+                key={orc.id}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-md border hover:bg-muted/50 cursor-pointer"
+                onClick={() => router.push(`/dashboard/orcamentos/${orc.id}`)}
+              >
+                <span className="font-medium flex-1">{orc.titulo}</span>
+                <span className="text-xs text-muted-foreground">v{orc.versao}</span>
+                <OrcamentoStatusBadge status={orc.status} />
+                <span className="text-sm text-muted-foreground w-24 text-right">
+                  {orc.validadeAt
+                    ? new Date(orc.validadeAt).toLocaleDateString("pt-BR")
+                    : "—"}
+                </span>
+                <span className="text-sm text-muted-foreground w-8 text-right">—</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
