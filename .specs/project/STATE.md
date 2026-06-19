@@ -1,7 +1,7 @@
 # State
 
 **Last Updated:** 2026-06-19
-**Current Work:** M3.5 — Orçamento Rápido (Fase 3e). M3 concluído (T-20 dnd-kit + T-21 PDF download done). Spec e tasks definidos em `.specs/features/orcamento-rapido/`. Pendente: TA-01 → TA-05.
+**Current Work:** M5 — Configurações (próximo milestone). M4 concluído hoje.
 
 ---
 
@@ -89,25 +89,45 @@
 
 ---
 
-### M3.5 — Orçamento Rápido / Fase 3e (planejado, 2026-06-19)
+### M4 — Controle Financeiro (concluído, 2026-06-19)
+
+**Spec:** `.specs/features/financeiro/spec.md`
+**Tasks:** `.specs/features/financeiro/tasks.md`
+
+**Entregue:**
+- `apps/api/src/interfaces/gasto.interfaces.ts` — tipos `GastoRecord`, `CreateGastoData`, `ResumoFinanceiro`, `IGastoRepository`
+- `apps/api/src/schemas/gasto.schemas.ts` — Zod + Fastify JSON Schema
+- `apps/api/src/repositories/gasto.repository.ts` — CRUD + agregações por categoria e por mês (em memória)
+- `apps/api/src/services/gasto.service.ts` — `GastoService` + `GastoNotFoundError`
+- `apps/api/src/routes/gastos.ts` — 6 endpoints: list (com filtros), create, update, delete, resumo financeiro, export CSV (UTF-8 BOM)
+- `apps/api/src/app.ts` — `gastosRoutes` registrado + tag "Gastos" no Swagger
+- `apps/web/lib/gastos.ts` — client API tipado: `gastosApi` + `CATEGORIA_LABELS` + tipos
+- `apps/web/app/dashboard/obras/[id]/gastos/page.tsx` — listagem com filtros (categoria + período) + CSV export + delete com confirmação
+- `apps/web/app/dashboard/obras/[id]/gastos/novo/page.tsx` — formulário de criação
+- `apps/web/app/dashboard/obras/[id]/gastos/[gastoId]/editar/page.tsx` — formulário de edição (pré-carrega via list)
+- `apps/web/app/dashboard/obras/[id]/relatorio/page.tsx` — BarChart por categoria + LineChart mensal + tabela comparativo orçado vs. realizado (Recharts)
+- `apps/web/app/dashboard/obras/[id]/page.tsx` — seção "Gastos recentes" (últimos 3) + botões "Ver gastos" e "Relatório"
+- recharts instalado em `apps/web`
+
+---
+
+### M3.5 — Orçamento Rápido / Fase 3e (concluído, 2026-06-19)
 
 **Spec:** `.specs/features/orcamento-rapido/spec.md`  
-**Tasks:** `.specs/features/orcamento-rapido/tasks.md`
+**Tasks:** `.specs/features/orcamento-rapido/tasks.md`  
+**Commits:** `c30effc` (T-21 PDF download M3) · `0e17c43` (M3.5 completo)
 
-**Contexto:** Feature de última hora — geração de PDF "sem compromisso" para usuários autenticados, sem vínculo a obra.
+**Entregue:**
+- `packages/shared/src/index.ts` — `OrcamentoRapidoItem` + `OrcamentoRapidoPayload` (com `oficio`, `modoServico`, `verba?`)
+- `apps/api/src/pdf/orcamento-rapido.tsx` — template PDF autenticado: logo/nome da empresa, modo wizard (tabela de itens) e modo verba (preço fechado), sem watermark PRUMO
+- `apps/api/src/routes/orcamentos-rapido.ts` — `POST /orcamentos/rapido/pdf` autenticado; carrega workspace do DB via `req.user.workspaceId`; validação Zod com `superRefine` (wizard exige ≥1 item, verba exige descrição + valor)
+- `apps/api/src/app.ts` — `orcamentosRapidoRoutes` registrado
+- `apps/web/lib/api.ts` — `requestBlob` e `api.blob()` estendidos para suportar `method` + `body` (POST)
+- `apps/web/lib/orcamentos.ts` — `orcamentosApi.gerarRapido(payload)` adicionado
+- `apps/web/app/dashboard/orcamentos/rapido/page.tsx` — fluxo único em página: seleção de ofício → itens com preços de mercado (checkboxes + custom + modo verba) → dados do cliente → condições com presets clicáveis → barra fixa com total + "Gerar PDF"
+- `apps/web/app/dashboard/layout.tsx` — link "Orçamento Rápido" no nav
 
-**Análise de viabilidade:**
-- Schema `Workspace` já tem `name`, `logoUrl`, `cnpj`, `telefone`, `emailContato` — sem migração necessária
-- Template `orcamento.tsx` já faz fallback logo → nome textual
-- Padrão do endpoint `/demo/pdf` (transiente, sem salvar no DB) será reutilizado
-- Sem dependência de M5 (Configurações) — logo é opcional
-
-**Pendente:**
-- TA-01: Tipos `OrcamentoRapidoPayload` em packages/shared
-- TA-02: Template `orcamento-rapido.tsx`
-- TA-03: Endpoint `POST /orcamentos/rapido/pdf` (autenticado)
-- TA-04: Página `/dashboard/orcamentos/rapido`
-- TA-05: Link no nav do dashboard
+**Decisão de design (ver AD-012):** reutilizou `StepOficio`, `StepServicos`, `StepCondicoes` da demo pública sem duplicação.
 
 ---
 
@@ -149,6 +169,15 @@
 ---
 
 ## Recent Decisions (Last 60 days)
+
+### AD-012: Orçamento Rápido reutiliza componentes da demo pública (2026-06-19)
+
+**Decision:** A página `/dashboard/orcamentos/rapido` reutiliza diretamente `StepOficio`, `StepServicos` e `StepCondicoes` de `apps/web/components/demo/`, em vez de criar componentes novos.
+**Reason:** Os componentes da demo já implementam exatamente o UX necessário — seleção de ofício, itens com preços de mercado editáveis, modo verba, condições com presets. Criar cópias seria duplicação pura.
+**Trade-off:** Os componentes ficam acoplados a dois fluxos (público e autenticado). Se precisar divergir (ex: mais ofícios ou campos exclusivos para autenticados), será necessário forkear. Aceitável até v1.1.
+**Impact:** Manter os componentes de demo agnósticos em relação ao contexto de autenticação — não introduzir lógica de auth neles.
+
+---
 
 ### AD-011: React unificado em `^19` no monorepo (2026-06-12)
 

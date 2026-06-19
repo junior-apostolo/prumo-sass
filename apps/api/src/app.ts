@@ -12,6 +12,7 @@ import { obrasRoutes } from "./routes/obras.js";
 import { demoRoutes } from "./routes/demo.js";
 import { orcamentosRoutes } from "./routes/orcamentos.js";
 import { orcamentosRapidoRoutes } from "./routes/orcamentos-rapido.js";
+import { gastosRoutes } from "./routes/gastos.js";
 
 async function build() {
   const app = Fastify({
@@ -52,6 +53,7 @@ async function build() {
         { name: "Obras", description: "Gerenciamento de obras" },
         { name: "Orçamentos", description: "Orçamentos vinculados a obras" },
         { name: "Demo", description: "Geração de orçamento público sem autenticação" },
+        { name: "Gastos", description: "Controle financeiro de obras" },
       ],
     },
   });
@@ -85,6 +87,7 @@ async function build() {
   await app.register(obrasRoutes);
   await app.register(orcamentosRoutes);
   await app.register(orcamentosRapidoRoutes);
+  await app.register(gastosRoutes);
   await app.register(demoRoutes);
 
   // ─── Health check ────────────────────────────────────────────────────────

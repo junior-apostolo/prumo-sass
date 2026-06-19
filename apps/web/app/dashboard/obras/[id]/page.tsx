@@ -28,6 +28,7 @@ import { ObraStatusBadge } from "@/components/obras/obra-status-badge";
 import { OrcamentoStatusBadge } from "@/components/orcamentos/orcamento-status-badge";
 import { obrasApi, type ObraComResumo, type ObraStatus } from "@/lib/obras";
 import { orcamentosApi, type OrcamentoDTO } from "@/lib/orcamentos";
+import { gastosApi, type GastoRecord, CATEGORIA_LABELS } from "@/lib/gastos";
 
 const STATUS_OPTIONS: { value: ObraStatus; label: string }[] = [
   { value: "PLANEJAMENTO", label: "Planejamento" },
@@ -55,6 +56,8 @@ export default function ObraDetailPage() {
   const [archiving, setArchiving] = useState(false);
   const [orcamentos, setOrcamentos] = useState<OrcamentoDTO[]>([]);
   const [loadingOrcamentos, setLoadingOrcamentos] = useState(true);
+  const [gastosRecentes, setGastosRecentes] = useState<GastoRecord[]>([]);
+  const [loadingGastos, setLoadingGastos] = useState(true);
 
   useEffect(() => {
     obrasApi
@@ -73,6 +76,14 @@ export default function ObraDetailPage() {
       .then(setOrcamentos)
       .catch(() => {})
       .finally(() => setLoadingOrcamentos(false));
+  }, [id]);
+
+  useEffect(() => {
+    gastosApi
+      .list(id)
+      .then((gs) => setGastosRecentes(gs.slice(0, 3)))
+      .catch(() => {})
+      .finally(() => setLoadingGastos(false));
   }, [id]);
 
   async function handleStatusChange(status: ObraStatus) {
@@ -284,6 +295,71 @@ export default function ObraDetailPage() {
                 <span className="text-sm text-muted-foreground w-8 text-right">—</span>
               </div>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Gastos recentes */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Gastos recentes</h2>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/dashboard/obras/${obra.id}/relatorio`)}
+            >
+              Relatório
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos`)}
+            >
+              <Plus className="w-4 h-4 mr-1.5" />
+              Ver gastos
+            </Button>
+          </div>
+        </div>
+
+        {loadingGastos ? (
+          <div className="flex flex-col gap-2">
+            <div className="h-10 bg-muted animate-pulse rounded" />
+            <div className="h-10 bg-muted animate-pulse rounded" />
+          </div>
+        ) : gastosRecentes.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Nenhum gasto registrado.{" "}
+            <button
+              className="underline text-foreground"
+              onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos/novo`)}
+            >
+              Registrar o primeiro
+            </button>
+          </p>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {gastosRecentes.map((g) => (
+              <div
+                key={g.id}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-md border hover:bg-muted/50 cursor-pointer"
+                onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos`)}
+              >
+                <span className="font-medium flex-1">{g.descricao}</span>
+                <span className="text-xs text-muted-foreground">{CATEGORIA_LABELS[g.categoria]}</span>
+                <span className="text-sm font-medium">
+                  {parseFloat(g.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </span>
+              </div>
+            ))}
+            {gastosRecentes.length === 3 && (
+              <button
+                className="text-xs text-muted-foreground hover:text-foreground text-left px-3 pt-1"
+                onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos`)}
+              >
+                Ver todos os gastos →
+              </button>
+            )}
           </div>
         )}
       </div>

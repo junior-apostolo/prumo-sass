@@ -1,7 +1,7 @@
 # PRUMO — Roadmap
 
 **Current Milestone:** MVP v1.0
-**Status:** In Progress — M3.5 Orçamento Rápido (Fase 3e)
+**Status:** In Progress — M4 Controle financeiro
 
 ---
 
@@ -36,15 +36,16 @@
 - Geração de PDF profissional no servidor (RF-19, RF-20) — **wow moment**
 - Alteração manual de status (RF-21)
 
-**M3.5 — Orçamento Rápido** - PLANNED (Fase 3e)
+**M3.5 — Orçamento Rápido** - DONE (2026-06-19)
 
 - Geração de PDF "sem compromisso" diretamente no dashboard, sem vínculo a obra (RF-RAPIDO-01 a RF-RAPIDO-06)
-- PDF com nome e logo da empresa carregados automaticamente da conta
-- Formulário: cliente, itens com total em tempo real, condições de pagamento
-- Sem persistência no banco — transiente como o `/demo` público
-- Viabilidade confirmada: sem mudanças de schema, sem dependência de M5
+- Seleção de ofício com preços de mercado pré-carregados por segmento
+- Itens via checkboxes editáveis + item personalizado + modo verba (preço fechado)
+- Condições de pagamento com presets clicáveis + campo livre
+- PDF com nome/logo da empresa carregados automaticamente — sem persistência no banco
+- Reutilizou componentes da demo pública (StepOficio, StepServicos, StepCondicoes)
 
-**M4 — Controle financeiro** - PLANNED
+**M4 — Controle financeiro** - DONE (2026-06-19)
 
 - Registro de gastos por obra (RF-22, RF-23)
 - Listagem com filtros por categoria e período (RF-24)
