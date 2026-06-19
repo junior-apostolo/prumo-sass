@@ -11,6 +11,7 @@ import { userRoutes } from "./routes/users.js";
 import { obrasRoutes } from "./routes/obras.js";
 import { demoRoutes } from "./routes/demo.js";
 import { orcamentosRoutes } from "./routes/orcamentos.js";
+import { orcamentosRapidoRoutes } from "./routes/orcamentos-rapido.js";
 
 async function build() {
   const app = Fastify({
@@ -83,6 +84,7 @@ async function build() {
   await app.register(userRoutes);
   await app.register(obrasRoutes);
   await app.register(orcamentosRoutes);
+  await app.register(orcamentosRapidoRoutes);
   await app.register(demoRoutes);
 
   // ─── Health check ────────────────────────────────────────────────────────

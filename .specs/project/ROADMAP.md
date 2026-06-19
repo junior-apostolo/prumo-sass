@@ -1,7 +1,7 @@
 # PRUMO — Roadmap
 
 **Current Milestone:** MVP v1.0
-**Status:** In Progress — M1 Autenticação
+**Status:** In Progress — M3.5 Orçamento Rápido (Fase 3e)
 
 ---
 
@@ -20,7 +20,7 @@
 - Workspace criado automaticamente no cadastro (RF-06)
 - Sessões com JWT 7 dias + refresh 30 dias (RF-05, RNF-06)
 
-**M2 — Obras** - IN PROGRESS
+**M2 — Obras** - DONE (2026-06-12)
 
 - CRUD completo de obras com campos opcionais (RF-07, RF-08)
 - Controle de status: Planejamento → Em execução → Concluída / Pausada (RF-09)
@@ -28,13 +28,21 @@
 - Soft delete / arquivamento (RF-11)
 - Tela de detalhe com cards financeiros (RF-12)
 
-**M3 — Orçamentos** - PLANNED
+**M3 — Orçamentos** - DONE (2026-06-19)
 
 - Criação de orçamento vinculado a uma obra (RF-13, RF-14)
 - Editor de itens com total em tempo real (RF-15, RF-16, RF-17)
 - Duplicação de orçamento com versão incremental (RF-18)
 - Geração de PDF profissional no servidor (RF-19, RF-20) — **wow moment**
 - Alteração manual de status (RF-21)
+
+**M3.5 — Orçamento Rápido** - PLANNED (Fase 3e)
+
+- Geração de PDF "sem compromisso" diretamente no dashboard, sem vínculo a obra (RF-RAPIDO-01 a RF-RAPIDO-06)
+- PDF com nome e logo da empresa carregados automaticamente da conta
+- Formulário: cliente, itens com total em tempo real, condições de pagamento
+- Sem persistência no banco — transiente como o `/demo` público
+- Viabilidade confirmada: sem mudanças de schema, sem dependência de M5
 
 **M4 — Controle financeiro** - PLANNED
 

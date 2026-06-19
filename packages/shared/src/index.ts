@@ -135,3 +135,29 @@ export interface DemoWizardPayload {
   validadeDias: number;
   observacoes?: string;
 }
+
+// ─── Orçamento Rápido (autenticado, transiente) ───────────────────────────────
+
+export interface OrcamentoRapidoItem {
+  descricao: string;
+  unidade: string;
+  quantidade: number;
+  valorUnitario: number;
+}
+
+export interface OrcamentoRapidoPayload {
+  oficio: TipoOficio;
+  modoServico: "wizard" | "verba";
+  cliente: {
+    nome: string;
+    endereco?: string;
+  };
+  itens?: OrcamentoRapidoItem[];
+  verba?: {
+    descricao: string;
+    valorTotal: number;
+  };
+  pagamento?: string;
+  validadeDias: number;
+  observacoes?: string;
+}

@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 
 const NAV_LINKS = [
   { href: "/dashboard/obras", label: "Obras" },
+  { href: "/dashboard/orcamentos/rapido", label: "Orçamento Rápido" },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

@@ -1,7 +1,7 @@
 # State
 
-**Last Updated:** 2026-06-12
-**Current Work:** M3 — Orçamentos. M1, LP e M2 concluídos. Fase 3a (demo pública) concluída.
+**Last Updated:** 2026-06-19
+**Current Work:** M3.5 — Orçamento Rápido (Fase 3e). M3 concluído (T-20 dnd-kit + T-21 PDF download done). Spec e tasks definidos em `.specs/features/orcamento-rapido/`. Pendente: TA-01 → TA-05.
 
 ---
 
@@ -76,6 +76,51 @@
 - `Decimal` do Prisma serializado como `string` na API e parseado no frontend
 
 ---
+
+---
+
+### M3 — Orçamentos / Fase 3d — Polish (concluído, 2026-06-19)
+
+**Todas as tasks concluídas (T-00 → T-21). Ver `.specs/features/orcamentos/tasks.md`.**
+
+**Bugs corrigidos:**
+- `orcamentosApi.upsertItens` enviava array diretamente; API Fastify esperava `{ itens: [...] }` → corrigido em `apps/web/lib/orcamentos.ts`
+- Auto-save entrava em loop infinito: `saveItens` chamava `setItens` (sync de IDs) → acionava debounce → loop → corrigido com `isSyncing` ref em `apps/web/app/dashboard/orcamentos/[id]/page.tsx`
+
+---
+
+### M3.5 — Orçamento Rápido / Fase 3e (planejado, 2026-06-19)
+
+**Spec:** `.specs/features/orcamento-rapido/spec.md`  
+**Tasks:** `.specs/features/orcamento-rapido/tasks.md`
+
+**Contexto:** Feature de última hora — geração de PDF "sem compromisso" para usuários autenticados, sem vínculo a obra.
+
+**Análise de viabilidade:**
+- Schema `Workspace` já tem `name`, `logoUrl`, `cnpj`, `telefone`, `emailContato` — sem migração necessária
+- Template `orcamento.tsx` já faz fallback logo → nome textual
+- Padrão do endpoint `/demo/pdf` (transiente, sem salvar no DB) será reutilizado
+- Sem dependência de M5 (Configurações) — logo é opcional
+
+**Pendente:**
+- TA-01: Tipos `OrcamentoRapidoPayload` em packages/shared
+- TA-02: Template `orcamento-rapido.tsx`
+- TA-03: Endpoint `POST /orcamentos/rapido/pdf` (autenticado)
+- TA-04: Página `/dashboard/orcamentos/rapido`
+- TA-05: Link no nav do dashboard
+
+---
+
+### M3 — Orçamentos / Fase 3c — Frontend Dashboard (concluído 2026-06-15)
+
+**Frontend (Next.js):**
+- `apps/web/lib/api.ts` — método `api.blob()` adicionado (para download de PDF autenticado)
+- `apps/web/lib/orcamentos.ts` — client API tipado com todos os 8 métodos: list, create, get, update, upsertItens, duplicar, updateStatus, downloadPdf
+- `apps/web/components/orcamentos/orcamento-status-badge.tsx` — badge reutilizável (RASCUNHO/cinza, ENVIADO/azul, APROVADO/verde, RECUSADO/vermelho)
+- `apps/web/app/dashboard/obras/[id]/page.tsx` — seção "Orçamentos" adicionada abaixo dos cards financeiros, com lista clicável, botão "Novo orçamento" e estado vazio
+- `apps/web/app/dashboard/obras/[id]/orcamentos/nova/page.tsx` — formulário de criação (título obrigatório, validade, observações) → redireciona para editor ao criar
+- `apps/web/app/dashboard/orcamentos/[id]/page.tsx` — editor completo: cabeçalho editável, status dropdown, tabela de itens inline editável, subtotais por categoria, total geral, prep para T-19 (saveStatus) e T-21 (Gerar PDF desabilitado)
+- `apps/web/components/ui/textarea.tsx` — criado (não existia)
 
 ---
 
@@ -209,6 +254,8 @@
 
 - **Campos de data em formulários HTML:** `<input type="date">` envia `"YYYY-MM-DD"`. Fastify valida antes do Zod — usar `format: "date"` (não `"date-time"`) nos body schemas da API. Ver AD-010.
 - **Componentes base-ui no shadcn:** Não suportam `asChild`. Usar `render={<Component />}` em vez de `asChild` em `DropdownMenuTrigger`, `AlertDialogTrigger` etc.
+- **Body de array no Fastify:** Fastify rejeita `PUT` com body array puro (`"body must be object"`). Sempre envolver em objeto: `{ itens: [...] }` em vez de `[...]`.
+- **Auto-save + `setItens` da API causam loop infinito:** Ao sincronizar IDs do servidor via `setItens`, o `useEffect([itens])` dispara novamente. Solução: ref `isSyncing` — setar `true` antes do `setItens`, checar e resetar no `useEffect`.
 - **Multiple React instances em monorepo + @react-pdf/renderer:** Instalar `react` em um workspace com versão diferente da raiz cria dois Reacts em memória. Os `Symbol()` JSX não coincidem e o reconciliador lança `Cannot read properties of null`. Solução: alinhar todas as versões de React no monorepo. Ver AD-011.
 - **`@react-pdf/renderer` e componente wrapper:** `renderToBuffer` espera o elemento `<Document>` diretamente. Ao passar `<MeuComponente />` (que retorna um Document), chamar o componente como função `MeuComponente({ payload })` antes de passar ao `renderToBuffer` evita que o reconciliador receba um tipo desconhecido.
 

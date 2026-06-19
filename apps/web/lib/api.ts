@@ -32,12 +32,15 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return res.json();
 }
 
-async function requestBlob(path: string): Promise<Blob> {
+async function requestBlob(path: string, options: RequestOptions = {}): Promise<Blob> {
   const res = await fetch(`${API_URL}${path}`, {
-    method: "GET",
+    method: options.method ?? "GET",
     headers: {
+      "Content-Type": "application/json",
       ...(_token ? { Authorization: `Bearer ${_token}` } : {}),
+      ...options.headers,
     },
+    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 
   if (!res.ok) {
@@ -65,5 +68,5 @@ export const api = {
   put: <T>(path: string, body: unknown) => request<T>(path, { method: "PUT", body }),
   patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body }),
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
-  blob: (path: string) => requestBlob(path),
+  blob: (path: string, options?: RequestOptions) => requestBlob(path, options),
 };

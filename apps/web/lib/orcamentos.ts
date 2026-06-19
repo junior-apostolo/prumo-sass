@@ -1,9 +1,9 @@
 import { OrcamentoDTO, ItemOrcamentoDTO } from "@enge-pro/shared";
 import { api } from "./api";
 
-export type { OrcamentoStatus, ItemCategoria } from "@enge-pro/shared";
+export type { OrcamentoStatus, ItemCategoria, OrcamentoRapidoPayload } from "@enge-pro/shared";
 export type { OrcamentoDTO, ItemOrcamentoDTO } from "@enge-pro/shared";
-import type { OrcamentoStatus, ItemCategoria } from "@enge-pro/shared";
+import type { OrcamentoStatus, ItemCategoria, OrcamentoRapidoPayload } from "@enge-pro/shared";
 
 export type OrcamentoComItens = OrcamentoDTO & { itens: ItemOrcamentoDTO[] };
 
@@ -33,9 +33,11 @@ export const orcamentosApi = {
   update: (id: string, data: UpdateOrcamentoInput) =>
     api.put<OrcamentoDTO>(`/orcamentos/${id}`, data),
   upsertItens: (id: string, itens: UpsertItemInput[]) =>
-    api.put<OrcamentoComItens>(`/orcamentos/${id}/itens`, itens),
+    api.put<OrcamentoComItens>(`/orcamentos/${id}/itens`, { itens }),
   duplicar: (id: string) => api.post<OrcamentoDTO>(`/orcamentos/${id}/duplicar`, {}),
   updateStatus: (id: string, status: OrcamentoStatus) =>
     api.patch<OrcamentoDTO>(`/orcamentos/${id}/status`, { status }),
   downloadPdf: (id: string) => api.blob(`/orcamentos/${id}/pdf`),
+  gerarRapido: (payload: OrcamentoRapidoPayload) =>
+    api.blob("/orcamentos/rapido/pdf", { method: "POST", body: payload }),
 };
