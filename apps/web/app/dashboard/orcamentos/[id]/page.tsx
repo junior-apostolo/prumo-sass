@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-import { Plus, Trash2, FileDown } from "lucide-react";
+import { Plus, Trash2, FileDown, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,8 +22,26 @@ import {
   type OrcamentoStatus,
   type ItemCategoria,
 } from "@/lib/orcamentos";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 type ItemLocal = {
+  localId: string;
   id?: string;
   descricao: string;
   categoria: ItemCategoria;
@@ -56,6 +74,101 @@ function formatCurrency(value: number): string {
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
+type SortableRowProps = {
+  item: ItemLocal;
+  index: number;
+  onUpdate: (index: number, field: keyof ItemLocal, value: string | number) => void;
+  onRemove: (index: number) => void;
+};
+
+function SortableRow({ item, index, onUpdate, onRemove }: SortableRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: item.localId });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <tr ref={setNodeRef} style={style} className="border-b last:border-0">
+      <td className="py-1.5 pr-2 w-6">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground p-1"
+          tabIndex={-1}
+        >
+          <GripVertical className="w-4 h-4" />
+        </button>
+      </td>
+      <td className="py-1.5 pr-2">
+        <Input
+          value={item.descricao}
+          onChange={(e) => onUpdate(index, "descricao", e.target.value)}
+          placeholder="Descrição do serviço"
+          className="h-8"
+        />
+      </td>
+      <td className="py-1.5 pr-2">
+        <select
+          value={item.categoria}
+          onChange={(e) => onUpdate(index, "categoria", e.target.value as ItemCategoria)}
+          className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+        >
+          {CATEGORIAS.map((cat) => (
+            <option key={cat} value={cat}>
+              {CATEGORIA_LABELS[cat]}
+            </option>
+          ))}
+        </select>
+      </td>
+      <td className="py-1.5 pr-2">
+        <Input
+          value={item.unidade}
+          onChange={(e) => onUpdate(index, "unidade", e.target.value)}
+          placeholder="un"
+          className="h-8"
+        />
+      </td>
+      <td className="py-1.5 pr-2">
+        <Input
+          type="number"
+          min="0"
+          step="0.01"
+          value={item.quantidade}
+          onChange={(e) => onUpdate(index, "quantidade", parseFloat(e.target.value) || 0)}
+          className="h-8"
+        />
+      </td>
+      <td className="py-1.5 pr-2">
+        <Input
+          type="number"
+          min="0"
+          step="0.01"
+          value={item.valorUnitario}
+          onChange={(e) => onUpdate(index, "valorUnitario", parseFloat(e.target.value) || 0)}
+          className="h-8"
+        />
+      </td>
+      <td className="py-1.5 pr-2 text-right tabular-nums">
+        {formatCurrency(item.quantidade * item.valorUnitario)}
+      </td>
+      <td className="py-1.5 text-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+          onClick={() => onRemove(index)}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </td>
+    </tr>
+  );
+}
+
 export default function OrcamentoEditorPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -73,6 +186,12 @@ export default function OrcamentoEditorPage() {
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasLoaded = useRef(false);
+  const isSyncing = useRef(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   useEffect(() => {
     orcamentosApi
@@ -84,6 +203,7 @@ export default function OrcamentoEditorPage() {
         setObservacoes(data.observacoes ?? "");
         setItens(
           data.itens.map((it) => ({
+            localId: it.id ?? crypto.randomUUID(),
             ...it,
             quantidade: parseFloat(it.quantidade),
             valorUnitario: parseFloat(it.valorUnitario),
@@ -137,6 +257,7 @@ export default function OrcamentoEditorPage() {
     setItens((prev) => [
       ...prev,
       {
+        localId: crypto.randomUUID(),
         descricao: "",
         categoria: "SERVICO",
         unidade: "un",
@@ -149,6 +270,17 @@ export default function OrcamentoEditorPage() {
 
   function removeItem(index: number) {
     setItens((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setItens((prev) => {
+        const oldIndex = prev.findIndex((item) => item.localId === active.id);
+        const newIndex = prev.findIndex((item) => item.localId === over.id);
+        return arrayMove(prev, oldIndex, newIndex).map((item, i) => ({ ...item, ordem: i }));
+      });
+    }
   }
 
   const saveItens = useCallback(async (itensParaSalvar: ItemLocal[]) => {
@@ -165,8 +297,10 @@ export default function OrcamentoEditorPage() {
       }));
       const updated = await orcamentosApi.upsertItens(id, input);
       setOrcamento((prev) => prev ? { ...prev, ...updated } : prev);
+      isSyncing.current = true;
       setItens(
         updated.itens.map((it) => ({
+          localId: it.id,
           ...it,
           quantidade: parseFloat(it.quantidade),
           valorUnitario: parseFloat(it.valorUnitario),
@@ -181,6 +315,10 @@ export default function OrcamentoEditorPage() {
 
   useEffect(() => {
     if (!hasLoaded.current) return;
+    if (isSyncing.current) {
+      isSyncing.current = false;
+      return;
+    }
     if (debounceRef.current) clearTimeout(debounceRef.current);
     setSaveStatus("idle");
     debounceRef.current = setTimeout(() => {
@@ -302,94 +440,42 @@ export default function OrcamentoEditorPage() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-muted-foreground">
-                  <th className="text-left pb-2 font-medium w-[30%]">Descrição</th>
-                  <th className="text-left pb-2 font-medium w-[15%]">Categoria</th>
-                  <th className="text-left pb-2 font-medium w-[8%]">Unidade</th>
-                  <th className="text-left pb-2 font-medium w-[10%]">Qtd</th>
-                  <th className="text-left pb-2 font-medium w-[12%]">Valor Unit.</th>
-                  <th className="text-right pb-2 font-medium w-[12%]">Total</th>
-                  <th className="w-[6%]" />
-                </tr>
-              </thead>
-              <tbody>
-                {itens.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="py-6 text-center text-muted-foreground">
-                      Nenhum item. Clique em "Adicionar item" para começar.
-                    </td>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-muted-foreground">
+                    <th className="w-6 pb-2" />
+                    <th className="text-left pb-2 font-medium w-[28%]">Descrição</th>
+                    <th className="text-left pb-2 font-medium w-[15%]">Categoria</th>
+                    <th className="text-left pb-2 font-medium w-[8%]">Unidade</th>
+                    <th className="text-left pb-2 font-medium w-[10%]">Qtd</th>
+                    <th className="text-left pb-2 font-medium w-[12%]">Valor Unit.</th>
+                    <th className="text-right pb-2 font-medium w-[12%]">Total</th>
+                    <th className="w-[6%]" />
                   </tr>
-                )}
-                {itens.map((item, i) => (
-                  <tr key={i} className="border-b last:border-0">
-                    <td className="py-1.5 pr-2">
-                      <Input
-                        value={item.descricao}
-                        onChange={(e) => updateItem(i, "descricao", e.target.value)}
-                        placeholder="Descrição do serviço"
-                        className="h-8"
+                </thead>
+                <tbody>
+                  <SortableContext items={itens.map((i) => i.localId)} strategy={verticalListSortingStrategy}>
+                    {itens.length === 0 && (
+                      <tr>
+                        <td colSpan={8} className="py-6 text-center text-muted-foreground">
+                          Nenhum item. Clique em "Adicionar item" para começar.
+                        </td>
+                      </tr>
+                    )}
+                    {itens.map((item, i) => (
+                      <SortableRow
+                        key={item.localId}
+                        item={item}
+                        index={i}
+                        onUpdate={updateItem}
+                        onRemove={removeItem}
                       />
-                    </td>
-                    <td className="py-1.5 pr-2">
-                      <select
-                        value={item.categoria}
-                        onChange={(e) => updateItem(i, "categoria", e.target.value as ItemCategoria)}
-                        className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                      >
-                        {CATEGORIAS.map((cat) => (
-                          <option key={cat} value={cat}>
-                            {CATEGORIA_LABELS[cat]}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="py-1.5 pr-2">
-                      <Input
-                        value={item.unidade}
-                        onChange={(e) => updateItem(i, "unidade", e.target.value)}
-                        placeholder="un"
-                        className="h-8"
-                      />
-                    </td>
-                    <td className="py-1.5 pr-2">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={item.quantidade}
-                        onChange={(e) => updateItem(i, "quantidade", parseFloat(e.target.value) || 0)}
-                        className="h-8"
-                      />
-                    </td>
-                    <td className="py-1.5 pr-2">
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={item.valorUnitario}
-                        onChange={(e) => updateItem(i, "valorUnitario", parseFloat(e.target.value) || 0)}
-                        className="h-8"
-                      />
-                    </td>
-                    <td className="py-1.5 pr-2 text-right tabular-nums">
-                      {formatCurrency(item.quantidade * item.valorUnitario)}
-                    </td>
-                    <td className="py-1.5 text-center">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => removeItem(i)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    ))}
+                  </SortableContext>
+                </tbody>
+              </table>
+            </DndContext>
           </div>
 
           <div className="flex items-center justify-between mt-4 pt-4 border-t">
