@@ -1,7 +1,7 @@
 # State
 
 **Last Updated:** 2026-06-19
-**Current Work:** M5 — Configurações (próximo milestone). M4 concluído hoje.
+**Current Work:** Fase 6 — Polish e lançamento (próximo milestone). M5 concluído hoje (RF-30 logo upload deferred — aguarda conta R2/S3).
 
 ---
 
@@ -86,6 +86,26 @@
 **Bugs corrigidos:**
 - `orcamentosApi.upsertItens` enviava array diretamente; API Fastify esperava `{ itens: [...] }` → corrigido em `apps/web/lib/orcamentos.ts`
 - Auto-save entrava em loop infinito: `saveItens` chamava `setItens` (sync de IDs) → acionava debounce → loop → corrigido com `isSyncing` ref em `apps/web/app/dashboard/orcamentos/[id]/page.tsx`
+
+---
+
+### M5 — Configurações (concluído parcialmente, 2026-06-19)
+
+**Spec:** `.specs/features/configuracoes/spec.md`
+**Tasks:** `.specs/features/configuracoes/tasks.md`
+
+**Entregue:**
+- `apps/api/src/repositories/user.repository.ts` — `updateProfile(userId, {name?, email?})` adicionado (valida unicidade de email, lança `EMAIL_IN_USE`)
+- `apps/api/src/repositories/workspace.repository.ts` — `findById` + `update` para campos configuráveis
+- `apps/api/src/routes/settings.ts` — 5 endpoints: GET/PUT `/settings/workspace`, PUT `/settings/profile`, PUT `/settings/password`, POST `/settings/workspace/logo` (stub 503)
+- `apps/api/src/app.ts` — `settingsRoutes` registrado + tag "Configurações" no Swagger
+- `apps/web/lib/api.ts` — `getApiToken()` exportado
+- `apps/web/lib/settings.ts` — client API tipado: `settingsApi` com `getWorkspace`, `updateWorkspace`, `updateProfile`, `changePassword`, `uploadLogo`
+- `apps/web/app/dashboard/configuracoes/page.tsx` — página com 4 cards: Perfil, Alterar senha, Dados da empresa, Logo (desabilitada com badge "Em breve")
+- `apps/web/app/dashboard/layout.tsx` — link "Configurações" adicionado ao nav
+
+**Deferred:**
+- RF-30 (upload de logo): endpoint retorna 503; ativar quando conta Cloudflare R2 ou AWS S3 for criada (T-M5-07 em tasks.md)
 
 ---
 

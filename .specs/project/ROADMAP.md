@@ -53,7 +53,7 @@
 - Alerta visual quando gastos ultrapassam 80% do contrato (RF-26)
 - Exportação CSV (RF-27)
 
-**M5 — Configurações** - PLANNED
+**M5 — Configurações** - DONE (2026-06-19) — RF-30 logo deferred até configurar R2/S3
 
 - Atualização de perfil: nome, email, senha (RF-28)
 - Dados da empresa: nome, CNPJ, telefone, email, endereço (RF-29)
