@@ -13,14 +13,15 @@ datasource db {
 // ─── Workspace & User ────────────────────────────────────────────────────────
 
 model Workspace {
-  id        String   @id @default(cuid())
-  name      String
-  logoUrl   String?
-  cnpj      String?
-  telefone  String?
+  id           String   @id @default(cuid())
+  name         String
+  razaoSocial  String?
+  logoUrl      String?
+  cnpj         String?
+  telefone     String?
   emailContato String?
-  endereco  String?
-  createdAt DateTime @default(now())
+  endereco     String?
+  createdAt    DateTime @default(now())
 
   users  User[]
   obras  Obra[]

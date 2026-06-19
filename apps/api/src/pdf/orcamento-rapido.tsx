@@ -180,6 +180,7 @@ export interface OrcamentoRapidoPdfInput {
   payload: OrcamentoRapidoPayload;
   workspace: {
     name: string;
+    razaoSocial: string | null;
     logoUrl: string | null;
     cnpj: string | null;
     telefone: string | null;
@@ -193,6 +194,7 @@ interface Props {
 
 export function OrcamentoRapidoPdf({ input }: Props) {
   const { payload, workspace } = input;
+  const nomeEmpresa = workspace.razaoSocial || workspace.name;
   const { modoServico, cliente, itens = [], verba, pagamento, validadeDias, observacoes } = payload;
 
   const hoje = new Date();
@@ -211,8 +213,8 @@ export function OrcamentoRapidoPdf({ input }: Props) {
 
   return (
     <Document
-      title={`Orçamento ${orcNumber} — ${workspace.name}`}
-      author={workspace.name}
+      title={`Orçamento ${orcNumber} — ${nomeEmpresa}`}
+      author={nomeEmpresa}
       creator="PRUMO"
     >
       <Page size="A4" style={styles.page}>
@@ -222,7 +224,7 @@ export function OrcamentoRapidoPdf({ input }: Props) {
             {workspace.logoUrl ? (
               <Image src={workspace.logoUrl} style={styles.logo} />
             ) : (
-              <Text style={styles.workspaceName}>{workspace.name}</Text>
+              <Text style={styles.workspaceName}>{nomeEmpresa}</Text>
             )}
             {workspace.cnpj && (
               <Text style={styles.workspaceSub}>CNPJ: {workspace.cnpj}</Text>
@@ -319,7 +321,7 @@ export function OrcamentoRapidoPdf({ input }: Props) {
 
         {/* ── Footer ── */}
         <View style={styles.footer} fixed>
-          <Text style={styles.footerLeft}>{workspace.name}</Text>
+          <Text style={styles.footerLeft}>{nomeEmpresa}</Text>
           {footerContatos ? (
             <Text style={styles.footerRight}>{footerContatos}</Text>
           ) : null}

@@ -116,7 +116,7 @@ export async function orcamentosRapidoRoutes(app: FastifyInstance) {
 
       const workspace = await prisma.workspace.findUnique({
         where: { id: req.user.workspaceId },
-        select: { name: true, logoUrl: true, cnpj: true, telefone: true, emailContato: true },
+        select: { name: true, razaoSocial: true, logoUrl: true, cnpj: true, telefone: true, emailContato: true },
       });
 
       if (!workspace) {
