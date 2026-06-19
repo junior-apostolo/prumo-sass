@@ -1,7 +1,7 @@
 # M3 — Orçamentos: Tasks
 
 **Spec**: `.specs/features/orcamentos/spec.md`
-**Status**: In Progress — Fase 3b concluída
+**Status**: ✅ CONCLUÍDO — Todas as fases 3a → 3d entregues
 **Gate rápido (API)**: `npm run type-check --workspace=apps/api`
 **Gate rápido (Web)**: `cd apps/web && npx tsc --noEmit`
 
@@ -25,14 +25,14 @@
 | T-11 | Rotas `POST .../duplicar` + `PATCH .../status` | ✅ DONE |
 | T-12 | PDF autenticado + rota `GET /orcamentos/:id/pdf` | ✅ DONE |
 | T-13 | Registrar rotas em `app.ts` | ✅ DONE |
-| T-14 | API client frontend (`apps/web/lib/orcamentos.ts`) | ⬜ TODO |
-| T-15 | Componente `OrcamentoStatusBadge` | ⬜ TODO |
-| T-16 | Seção de orçamentos na página de detalhe da obra | ⬜ TODO |
-| T-17 | Página criar orçamento (`/dashboard/obras/[id]/orcamentos/nova`) | ⬜ TODO |
-| T-18 | Editor de orçamento (`/dashboard/orcamentos/[id]`) | ⬜ TODO |
-| T-19 | Auto-save com debounce 1s no editor | ⬜ TODO |
-| T-20 | Reordenação com `@dnd-kit/sortable` | ⬜ TODO |
-| T-21 | Botão "Gerar PDF" + download no detalhe do orçamento | ⬜ TODO |
+| T-14 | API client frontend (`apps/web/lib/orcamentos.ts`) | ✅ DONE |
+| T-15 | Componente `OrcamentoStatusBadge` | ✅ DONE |
+| T-16 | Seção de orçamentos na página de detalhe da obra | ✅ DONE |
+| T-17 | Página criar orçamento (`/dashboard/obras/[id]/orcamentos/nova`) | ✅ DONE |
+| T-18 | Editor de orçamento (`/dashboard/orcamentos/[id]`) | ✅ DONE |
+| T-19 | Auto-save com debounce 1s no editor | ✅ DONE |
+| T-20 | Reordenação com `@dnd-kit/sortable` | ✅ DONE |
+| T-21 | Botão "Gerar PDF" + download no detalhe do orçamento | ✅ DONE |
 
 ---
 

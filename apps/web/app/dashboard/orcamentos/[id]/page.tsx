@@ -22,6 +22,7 @@ import {
   type OrcamentoStatus,
   type ItemCategoria,
 } from "@/lib/orcamentos";
+import { downloadBlob } from "@/lib/demo-api";
 import {
   DndContext,
   closestCenter,
@@ -183,6 +184,7 @@ export default function OrcamentoEditorPage() {
 
   const [itens, setItens] = useState<ItemLocal[]>([]);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [generatingPdf, setGeneratingPdf] = useState(false);
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasLoaded = useRef(false);
@@ -272,6 +274,18 @@ export default function OrcamentoEditorPage() {
     setItens((prev) => prev.filter((_, i) => i !== index));
   }
 
+  async function handleDownloadPdf() {
+    setGeneratingPdf(true);
+    try {
+      const blob = await orcamentosApi.downloadPdf(id);
+      downloadBlob(blob, `orcamento-${orcamento?.titulo ?? id}.pdf`);
+    } catch {
+      toast.error("Erro ao gerar PDF");
+    } finally {
+      setGeneratingPdf(false);
+    }
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (over && active.id !== over.id) {
@@ -358,9 +372,9 @@ export default function OrcamentoEditorPage() {
           <OrcamentoStatusBadge status={orcamento.status} />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled>
+          <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={generatingPdf}>
             <FileDown className="w-4 h-4 mr-1.5" />
-            Gerar PDF
+            {generatingPdf ? "Gerando PDF…" : "Gerar PDF"}
           </Button>
         </div>
       </div>
