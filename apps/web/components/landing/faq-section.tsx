@@ -2,57 +2,58 @@ import { AnimateIn } from "./animate-in";
 
 const faqs = [
   {
-    question: "Preciso de cartão de crédito para criar conta?",
+    question: "Preciso instalar alguma coisa?",
     answer:
-      "Não. O plano gratuito não exige cartão. Você só paga se decidir assinar o Pro.",
+      "Não. É tudo no navegador e funciona no celular — dá pra montar um orçamento ali na obra, no 3G.",
+    open: true,
   },
   {
-    question: "O PDF realmente parece profissional?",
+    question: "O PDF do plano gratuito tem marca d'água?",
     answer:
-      "Sim. O PDF inclui a logo da sua empresa (plano Pro), dados do cliente, tabela de itens organizada por categoria, subtotais e total geral — pronto para enviar direto para o cliente.",
+      "Não. No gratuito o PDF já é profissional e limpo. A sua logo no cabeçalho entra no plano Pro.",
+    open: false,
   },
   {
-    question: "Funciona no celular?",
+    question: "Como funcionam os preços de mercado?",
     answer:
-      "Funciona. O PRUMO é responsivo e pensado para uso na obra — de iPhone SE a desktop. Você consegue registrar um gasto ou consultar o resumo financeiro direto do canteiro.",
-  },
-  {
-    question: "Como funciona o controle de gastos?",
-    answer:
-      "Você registra cada gasto na obra (material, mão de obra, equipamento). O sistema calcula automaticamente o quanto foi gasto vs. orçado e exibe um gráfico comparativo. Tem alerta visual quando os gastos passam de 80% do contrato.",
+      "Já vêm valores de referência por ofício. Você usa como ponto de partida e ajusta para a sua região e a sua margem.",
+    open: false,
   },
   {
     question: "Posso cancelar quando quiser?",
+    answer: "Sim, sem fidelidade. O Pro é mês a mês — cancela quando quiser.",
+    open: false,
+  },
+  {
+    question: "Serve pra qual tipo de profissional?",
     answer:
-      "Sim. Sem fidelidade, sem multa. Se cancelar, a conta volta automaticamente para o plano gratuito.",
+      "Autônomos da construção: eletricista, pedreiro, pintor, encanador, azulejista e gesseiro que trabalham sozinhos ou com um ajudante.",
+    open: false,
   },
 ];
 
 export function FaqSection() {
   return (
-    <section className="bg-muted/40 py-20" id="faq">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <AnimateIn className="mb-12 text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Perguntas frequentes
-          </h2>
-        </AnimateIn>
-
-        <div className="mx-auto max-w-2xl divide-y">
-          {faqs.map(({ question, answer }, i) => (
-            <AnimateIn key={question} delay={i * 80}>
-              <details className="group py-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium">
-                  {question}
-                  <span className="shrink-0 text-muted-foreground transition-transform duration-300 group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-3 text-sm text-muted-foreground">{answer}</p>
-              </details>
-            </AnimateIn>
-          ))}
-        </div>
+    <section className="mx-auto max-w-[760px] mt-[104px] px-8" id="faq">
+      <AnimateIn className="text-center">
+        <h2 className="font-newsreader font-medium text-[38px] leading-[1.1] tracking-[-0.02em]">
+          Perguntas frequentes
+        </h2>
+      </AnimateIn>
+      <div className="mt-9 flex flex-col gap-3">
+        {faqs.map(({ question, answer, open }, i) => (
+          <AnimateIn key={question} delay={i * 80}>
+            <details
+              className="bg-[#FBFCFE] border border-[#ECF0F8] rounded-[14px] px-[22px] py-5"
+              {...(open ? { open: true } : {})}
+            >
+              <summary className="text-[16.5px] font-bold cursor-pointer list-none">
+                {question}
+              </summary>
+              <p className="text-[15px] leading-[1.6] text-[#5A6781] mt-2.5">{answer}</p>
+            </details>
+          </AnimateIn>
+        ))}
       </div>
     </section>
   );

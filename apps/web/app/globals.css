@@ -10,6 +10,7 @@
   --font-sans: var(--font-inter);
   --font-mono: var(--font-inter);
   --font-heading: var(--font-inter);
+  --font-newsreader: var(--font-newsreader);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -167,4 +168,13 @@
 .scroll-animate.in-view {
   opacity: 1;
   transform: translateY(0);
+}
+
+@keyframes prm-float {
+  0%, 100% { transform: translateY(0) rotate(-1.4deg); }
+  50% { transform: translateY(-10px) rotate(-1.4deg); }
+}
+
+.animate-prm-float {
+  animation: prm-float 6s ease-in-out infinite;
 }

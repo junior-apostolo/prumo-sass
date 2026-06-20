@@ -4,45 +4,44 @@ const steps = [
   {
     number: "01",
     title: "Escolha seu ofício",
-    description:
-      "Eletricista, pedreiro, encanador, pintor — selecione e os serviços mais comuns já aparecem com preços de mercado.",
+    description: "Eletricista, pedreiro, pintor… os preços de referência já entram prontos.",
   },
   {
     number: "02",
     title: "Monte o orçamento",
-    description:
-      "Marque o que vai fazer, ajuste as quantidades. O total atualiza em tempo real, sem cálculo manual.",
+    description: "Adicione itens, ajuste valores. As contas e a formatação são automáticas.",
   },
   {
     number: "03",
     title: "Baixe o PDF",
-    description:
-      "Documento profissional com sua logo e CNPJ, pronto para mandar pelo WhatsApp ou email.",
+    description: "Documento profissional com a sua logo, pronto para mandar pro cliente.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section className="bg-muted/40 py-20" id="como-funciona">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <AnimateIn className="mb-12 text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            De 0 a PDF em menos de 3 minutos
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Sem treinamento, sem onboarding. Apenas entre e comece a trabalhar.
-          </p>
-        </AnimateIn>
-
-        <div className="grid gap-8 md:grid-cols-3">
-          {steps.map(({ number, title, description }, i) => (
-            <AnimateIn key={number} delay={i * 150} className="flex flex-col gap-3">
-              <span className="text-5xl font-bold text-primary/20">{number}</span>
-              <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-sm text-muted-foreground">{description}</p>
-            </AnimateIn>
-          ))}
-        </div>
+    <section className="mx-auto max-w-[1080px] mt-[104px] px-8" id="como">
+      <AnimateIn className="text-center">
+        <h2 className="font-newsreader font-medium text-[42px] leading-[1.1] tracking-[-0.02em]">
+          De 0 a PDF em menos de 3 minutos
+        </h2>
+        <p className="mt-3 text-[#5A6781]">
+          Sem treinamento, sem onboarding. Apenas entre e comece a trabalhar.
+        </p>
+      </AnimateIn>
+      <div className="grid md:grid-cols-3 gap-5 mt-[46px]">
+        {steps.map(({ number, title, description }, i) => (
+          <AnimateIn key={number} delay={i * 150} className="text-left">
+            <div className="flex items-center gap-3">
+              <span className="font-newsreader text-[34px] font-medium text-[#1E5BE6]">
+                {number}
+              </span>
+              <span className="h-px flex-1 bg-[#E1E8F5]" />
+            </div>
+            <h3 className="text-[20px] font-bold mt-4 tracking-[-0.01em]">{title}</h3>
+            <p className="text-[15px] leading-[1.6] text-[#5A6781] mt-2">{description}</p>
+          </AnimateIn>
+        ))}
       </div>
     </section>
   );

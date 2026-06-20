@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Newsreader } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import "./globals.css";
@@ -10,9 +10,17 @@ const inter = Inter({
   display: "swap",
 });
 
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  display: "swap",
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600"],
+});
+
 export const metadata: Metadata = {
-  title: "PRUMO — Gestão de Obras",
-  description: "Plataforma para gestão de obras e orçamentos profissionais",
+  title: "PRUMO — Orçamento profissional para prestadores",
+  description: "Gere PDFs profissionais com sua logo em minutos. Para eletricistas, pedreiros, pintores e encanadores.",
 };
 
 export default function RootLayout({
@@ -21,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
+    <html lang="pt-BR" className={`${inter.variable} ${newsreader.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <AuthProvider>
           {children}

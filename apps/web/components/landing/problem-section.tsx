@@ -1,58 +1,73 @@
-import { FileText, TrendingDown, MessagesSquare } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimateIn } from "./animate-in";
+
+function MessageIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M8 9h8M8 13h5M5 4h14a1 1 0 011 1v12l-4-3H5a1 1 0 01-1-1V5a1 1 0 011-1z" stroke="#E15A5A" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function ClockIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="8.5" stroke="#D89A2E" strokeWidth="1.8" />
+      <path d="M12 8v4l3 2" stroke="#D89A2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function ListIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M4 6h16M4 12h16M4 18h10" stroke="#3D6FD6" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 const problems = [
   {
-    icon: FileText,
+    iconBg: "#FDECEC",
+    icon: <MessageIcon />,
     title: "Orçamentos que parecem amadores",
     description:
-      "Clientes pedem desconto porque o documento no Word não inspira confiança. Você perde para o concorrente que entrega um PDF bem formatado.",
+      "Preço solto no WhatsApp ou num Word mal formatado. O cliente pede desconto — ou fecha com quem mandou um PDF bem feito.",
   },
   {
-    icon: TrendingDown,
-    title: "Cada orçamento te toma uma hora",
+    iconBg: "#FFF4E2",
+    icon: <ClockIcon />,
+    title: "Cada orçamento toma uma hora",
     description:
-      "Você monta tudo do zero toda vez — valores, formatação, cálculos. Tempo que poderia estar na obra, ou conquistando o próximo cliente.",
+      "Você monta tudo do zero toda vez: valores, contas, formatação. Falta um ponto de partida pronto.",
   },
   {
-    icon: MessagesSquare,
-    title: "Dados em planilha, WhatsApp e caderninho",
+    iconBg: "#EEF3FF",
+    icon: <ListIcon />,
+    title: "Dados espalhados em todo lugar",
     description:
-      "Uma hora procurando onde anotou aquele gasto. Informação espalhada, decisão errada.",
+      "Planilha, WhatsApp e caderninho. Você só descobre o prejuízo quando a obra acaba.",
   },
 ];
 
 export function ProblemSection() {
   return (
-    <section className="bg-muted/40 py-20" id="problema">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <AnimateIn className="mb-12 text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Você ainda gerencia obras assim?
-          </h2>
-          <p className="mt-3 text-muted-foreground">
-            Se algum desses cenários soa familiar, o PRUMO foi feito pra você.
-          </p>
-        </AnimateIn>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {problems.map(({ icon: Icon, title, description }, i) => (
-            <AnimateIn key={title} delay={i * 120}>
-              <Card className="border-destructive/20 bg-destructive/5 h-full">
-                <CardHeader className="pb-3">
-                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
-                    <Icon className="size-5 text-destructive" />
-                  </div>
-                  <CardTitle className="text-base">{title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{description}</p>
-                </CardContent>
-              </Card>
-            </AnimateIn>
-          ))}
-        </div>
+    <section className="mx-auto max-w-[1080px] mt-[96px] px-8" id="problema">
+      <AnimateIn className="text-center max-w-[620px] mx-auto">
+        <h2 className="font-newsreader font-medium text-[42px] leading-[1.1] tracking-[-0.02em]">
+          Você ainda gerencia obras assim?
+        </h2>
+      </AnimateIn>
+      <div className="grid md:grid-cols-3 gap-5 mt-[42px]">
+        {problems.map(({ iconBg, icon, title, description }, i) => (
+          <AnimateIn key={title} delay={i * 120} className="bg-[#FBFCFE] border border-[#ECF0F8] rounded-[18px] p-7">
+            <div
+              className="w-[46px] h-[46px] rounded-[12px] flex items-center justify-center"
+              style={{ background: iconBg }}
+            >
+              {icon}
+            </div>
+            <h3 className="text-[19px] font-bold mt-[18px] tracking-[-0.01em]">{title}</h3>
+            <p className="text-[15px] leading-[1.6] text-[#5A6781] mt-2.5">{description}</p>
+          </AnimateIn>
+        ))}
       </div>
     </section>
   );
