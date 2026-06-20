@@ -19,7 +19,7 @@ const freePlan = {
   items: [
     "2 obras ativas",
     "5 orçamentos por mês",
-    "PDF sem logo da empresa",
+    "PDF profissional (logo disponível no Pro)",
     "Controle financeiro básico",
   ],
   cta: "Começar grátis",
@@ -39,7 +39,7 @@ const proPlan = {
     "Exportação CSV",
     "Suporte prioritário",
   ],
-  cta: "Assinar Pro",
+  cta: "Quero o PDF com minha logo",
   href: "/register",
   highlighted: true,
 };
@@ -104,10 +104,11 @@ export function PricingSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <AnimateIn className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Simples e transparente
+            Quanto vale fechar um serviço a mais por mês?
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Comece grátis. Escale quando precisar.
+            O Pro se paga com o primeiro serviço que você fechar usando um PDF
+            profissional.
           </p>
         </AnimateIn>
 

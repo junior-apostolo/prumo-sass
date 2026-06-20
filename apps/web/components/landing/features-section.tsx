@@ -4,22 +4,22 @@ import { AnimateIn } from "./animate-in";
 
 const features = [
   {
-    icon: Building2,
-    title: "Gestão de Obras",
+    icon: FileCheck,
+    title: "PDF com a sua logo",
     description:
-      "Cadastre obras, acompanhe o status — Planejamento → Em execução → Concluída — e monitore o custo em tempo real. Sabe em segundos quanto falta para estourar o orçamento.",
+      "Logo, CNPJ e dados da empresa no documento. O tipo de proposta que faz o cliente fechar — sem pedir desconto.",
   },
   {
-    icon: FileCheck,
-    title: "Orçamentos em PDF",
+    icon: Building2,
+    title: "Preços de mercado prontos",
     description:
-      "Monte o orçamento por categoria (material, mão de obra, equipamento) e gere um PDF profissional com a sua logo. Envie para o cliente em menos de 3 minutos.",
+      "Selecione o ofício, os serviços já aparecem com valores de referência. Ajuste o que quiser e gere o PDF.",
   },
   {
     icon: BarChart3,
-    title: "Controle Financeiro",
+    title: "Obra no controle",
     description:
-      "Registre cada gasto e veja o comparativo de orçado vs. realizado em gráficos. Alerta automático quando os gastos passam de 80% do contrato.",
+      "Registre gastos e veja quanto já foi para a obra em tempo real. Alerta quando chega nos 80% do contrato.",
   },
 ];
 
@@ -29,11 +29,11 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <AnimateIn className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Tudo que você precisa, sem curva de aprendizado
+            Tudo para você cobrar pelo que vale
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Três ferramentas integradas para você gerenciar obras como um
-            profissional.
+            De autônomo que manda preço no WhatsApp para profissional que envia
+            PDF com a sua logo.
           </p>
         </AnimateIn>
 

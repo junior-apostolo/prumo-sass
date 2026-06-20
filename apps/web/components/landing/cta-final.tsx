@@ -11,8 +11,8 @@ export function CtaFinal() {
           Pare de perder contratos por orçamentos mal formatados
         </h2>
         <p className="mt-4 text-muted-foreground">
-          Junte-se a profissionais que já gerenciam obras com mais controle e
-          profissionalismo.
+          Gere seu primeiro PDF agora — sem cadastro, sem cartão. Se gostar,
+          crie sua conta e tenha tudo ilimitado.
         </p>
         <Link
           href="/register"

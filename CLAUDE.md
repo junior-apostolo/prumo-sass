@@ -45,7 +45,7 @@ A única exceção são perguntas puramente explicativas sobre o código, sem in
 
 ## Regra obrigatória: usar responsive-audit ao verificar/corrigir responsividade
 
-**SEMPRE** que o usuário pedir para testar, verificar ou corrigir responsividade de uma tela ou componente — invoque o skill `/responsive-audit <arquivo>` **antes de qualquer análise manual**.
+**SEMPRE** que o usuário pedir para testar, verificar ou corrigir responsividade de uma tela ou componente. Após qualquer implementação de um novo componente ou feature — invoque o skill `/responsive-audit <arquivo>` **antes de qualquer análise manual**.
 
 Exemplos que disparam obrigatoriamente:
 

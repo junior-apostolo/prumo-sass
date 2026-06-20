@@ -11,9 +11,9 @@ const problems = [
   },
   {
     icon: TrendingDown,
-    title: "Custo real? Só quando a obra termina",
+    title: "Cada orçamento te toma uma hora",
     description:
-      "Sem visibilidade do gasto em tempo real, você descobre o prejuízo só no final, quando não dá mais pra ajustar.",
+      "Você monta tudo do zero toda vez — valores, formatação, cálculos. Tempo que poderia estar na obra, ou conquistando o próximo cliente.",
   },
   {
     icon: MessagesSquare,

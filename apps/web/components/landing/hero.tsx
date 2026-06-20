@@ -12,7 +12,7 @@ export function Hero() {
         style={{ animationDelay: "0ms", opacity: 0 }}
       >
         <Badge variant="secondary" className="mb-6">
-          Gestão de Obras · Novo
+          Para prestadores de serviço autônomos
         </Badge>
       </div>
 
@@ -22,8 +22,8 @@ export function Hero() {
         className="animate-fade-up mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl"
         style={{ animationDelay: "180ms", opacity: 0 }}
       >
-        Gestão completa de obras para engenheiros e empreiteiros. Chega de
-        planilha e WhatsApp.
+        Eletricista, pedreiro, pintor, encanador — gere PDFs profissionais com
+        sua logo em minutos. Sem planilha, sem Word, sem designer.
       </p>
 
       <div

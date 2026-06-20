@@ -3,21 +3,21 @@ import { AnimateIn } from "./animate-in";
 const steps = [
   {
     number: "01",
-    title: "Crie sua conta",
+    title: "Escolha seu ofício",
     description:
-      "Cadastro em 30 segundos. Seu workspace já vem configurado — nenhum dado de cartão necessário no plano gratuito.",
+      "Eletricista, pedreiro, encanador, pintor — selecione e os serviços mais comuns já aparecem com preços de mercado.",
   },
   {
     number: "02",
-    title: "Cadastre sua obra",
+    title: "Monte o orçamento",
     description:
-      "Nome, cliente, valor do contrato e data de início. Pronto. A obra aparece na sua lista com resumo financeiro em tempo real.",
+      "Marque o que vai fazer, ajuste as quantidades. O total atualiza em tempo real, sem cálculo manual.",
   },
   {
     number: "03",
-    title: "Gere o orçamento",
+    title: "Baixe o PDF",
     description:
-      "Adicione itens por categoria, veja o total atualizar em tempo real e exporte o PDF profissional em um clique.",
+      "Documento profissional com sua logo e CNPJ, pronto para mandar pelo WhatsApp ou email.",
   },
 ];
 
@@ -27,7 +27,7 @@ export function HowItWorks() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <AnimateIn className="mb-12 text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Comece em 3 passos
+            De 0 a PDF em menos de 3 minutos
           </h2>
           <p className="mt-3 text-muted-foreground">
             Sem treinamento, sem onboarding. Apenas entre e comece a trabalhar.
