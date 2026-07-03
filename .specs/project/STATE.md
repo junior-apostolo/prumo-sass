@@ -313,6 +313,12 @@
 
 ## Quick Tasks Completed
 
+### 002: Corrigir erro de build no deploy Vercel — `style` ausente em `AnimateIn` (2026-07-03)
+
+**Bug:** deploy falhava em `next build` / TypeScript check: `apps/web/components/landing/features-section.tsx` passava `style={{...}}` para `<AnimateIn>`, mas o componente (`apps/web/components/landing/animate-in.tsx`) não aceitava essa prop. Introduzido no redesign da landing (commit `96ebcdf`).
+**Fix:** adicionado `style?: React.CSSProperties` a `AnimateInProps`, repassado ao elemento `Tag`.
+Ver `.specs/quick/002-fix-animatein-style-typecheck/TASK.md`.
+
 ### 001: Corrigir geração de PDF na demo pública (2026-07-03)
 
 **Bug:** `/api/demo/pdf` (rota BFF em `apps/web/app/api/demo/pdf/route.ts`) era bloqueada pelo `middleware.ts` — não estava em `STATIC_PUBLIC_PREFIXES`, então requisições não-autenticadas recebiam redirect 307 para `/login`. Como `fetch()` segue redirects automaticamente, o frontend baixava a página HTML de `/login` com status 200 achando que era o PDF — por isso o arquivo baixava mas não abria.

@@ -8,6 +8,7 @@ interface AnimateInProps {
   className?: string;
   delay?: number;
   as?: React.ElementType;
+  style?: React.CSSProperties;
 }
 
 export function AnimateIn({
@@ -15,6 +16,7 @@ export function AnimateIn({
   className,
   delay = 0,
   as: Tag = "div",
+  style,
 }: AnimateInProps) {
   const ref = useRef<HTMLElement>(null);
 
@@ -38,7 +40,7 @@ export function AnimateIn({
   }, [delay]);
 
   return (
-    <Tag ref={ref} className={cn("scroll-animate", className)}>
+    <Tag ref={ref} className={cn("scroll-animate", className)} style={style}>
       {children}
     </Tag>
   );
