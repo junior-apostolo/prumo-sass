@@ -306,13 +306,19 @@
 - **Body de array no Fastify:** Fastify rejeita `PUT` com body array puro (`"body must be object"`). Sempre envolver em objeto: `{ itens: [...] }` em vez de `[...]`.
 - **Auto-save + `setItens` da API causam loop infinito:** Ao sincronizar IDs do servidor via `setItens`, o `useEffect([itens])` dispara novamente. Solução: ref `isSyncing` — setar `true` antes do `setItens`, checar e resetar no `useEffect`.
 - **Multiple React instances em monorepo + @react-pdf/renderer:** Instalar `react` em um workspace com versão diferente da raiz cria dois Reacts em memória. Os `Symbol()` JSX não coincidem e o reconciliador lança `Cannot read properties of null`. Solução: alinhar todas as versões de React no monorepo. Ver AD-011.
+- **Rotas BFF públicas precisam ser liberadas separadamente da página no middleware:** tornar uma página pública (`PUBLIC_ROUTES`) não libera automaticamente as rotas de API que ela chama (`/api/...`). Como `fetch()` segue redirects por padrão, um bloqueio silencioso no middleware (redirect 307 para `/login`) é mascarado como sucesso (200) no cliente, entregando HTML no lugar do payload esperado. Sempre adicionar o prefixo `/api/<feature>` correspondente a `STATIC_PUBLIC_PREFIXES` junto com a página pública.
 - **`@react-pdf/renderer` e componente wrapper:** `renderToBuffer` espera o elemento `<Document>` diretamente. Ao passar `<MeuComponente />` (que retorna um Document), chamar o componente como função `MeuComponente({ payload })` antes de passar ao `renderToBuffer` evita que o reconciliador receba um tipo desconhecido.
 
 ---
 
 ## Quick Tasks Completed
 
-_(nenhuma ainda)_
+### 001: Corrigir geração de PDF na demo pública (2026-07-03)
+
+**Bug:** `/api/demo/pdf` (rota BFF em `apps/web/app/api/demo/pdf/route.ts`) era bloqueada pelo `middleware.ts` — não estava em `STATIC_PUBLIC_PREFIXES`, então requisições não-autenticadas recebiam redirect 307 para `/login`. Como `fetch()` segue redirects automaticamente, o frontend baixava a página HTML de `/login` com status 200 achando que era o PDF — por isso o arquivo baixava mas não abria.
+**Fix:** adicionado `/api/demo` a `STATIC_PUBLIC_PREFIXES` em `apps/web/middleware.ts`.
+**Existia desde:** commit `6eb0985` (criação da demo pública) — ao tornar `/demo` público, a rota BFF correspondente não foi incluída.
+Ver `.specs/quick/001-fix-demo-pdf-middleware/TASK.md`.
 
 ---
 

@@ -3,7 +3,7 @@ import { verifyToken } from "@/lib/auth/verify";
 
 const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password"];
 const PUBLIC_ROUTES = ["/demo"];
-const STATIC_PUBLIC_PREFIXES = ["/api/auth", "/_next", "/favicon.ico"];
+const STATIC_PUBLIC_PREFIXES = ["/api/auth", "/api/demo", "/_next", "/favicon.ico"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
