@@ -161,3 +161,48 @@ export interface OrcamentoRapidoPayload {
   validadeDias: number;
   observacoes?: string;
 }
+
+// ─── Formatação de contato (telefone, CPF/CNPJ, email) ────────────────────────
+// Todas as funções são idempotentes: extraem apenas dígitos antes de reformatar,
+// então aplicar a um valor já formatado produz o mesmo resultado.
+
+export function formatTelefone(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length === 0) return "";
+  if (digits.length <= 2) return `(${digits}`;
+  const ddd = digits.slice(0, 2);
+  const rest = digits.slice(2);
+  if (rest.length <= 4) return `(${ddd}) ${rest}`;
+  const splitAt = digits.length > 10 ? 5 : 4;
+  return `(${ddd}) ${rest.slice(0, splitAt)}-${rest.slice(splitAt)}`;
+}
+
+function formatCpfDigits(digits: string): string {
+  return digits
+    .replace(/^(\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
+}
+
+function formatCnpjDigits(digits: string): string {
+  return digits
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
+    .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5");
+}
+
+export function formatCnpj(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 14);
+  return formatCnpjDigits(digits);
+}
+
+/** Alterna CPF (até 11 dígitos) / CNPJ (acima de 11) conforme a quantidade digitada. */
+export function formatCpfCnpj(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 14);
+  return digits.length > 11 ? formatCnpjDigits(digits) : formatCpfDigits(digits);
+}
+
+export function formatEmail(value: string): string {
+  return value.toLowerCase();
+}
