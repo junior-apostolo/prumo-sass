@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -93,12 +92,12 @@ function SortableRow({ item, index, onUpdate, onRemove }: SortableRowProps) {
   };
 
   return (
-    <tr ref={setNodeRef} style={style} className="border-b last:border-0">
+    <tr ref={setNodeRef} style={style} className="border-b border-[#EEF2F9] last:border-0 hover:bg-[#F7FAFF]">
       <td className="py-1.5 pr-2 w-6">
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground p-1"
+          className="cursor-grab active:cursor-grabbing text-[#9AA7BD] hover:text-[#334155] p-1"
           tabIndex={-1}
         >
           <GripVertical className="w-4 h-4" />
@@ -109,14 +108,14 @@ function SortableRow({ item, index, onUpdate, onRemove }: SortableRowProps) {
           value={item.descricao}
           onChange={(e) => onUpdate(index, "descricao", e.target.value)}
           placeholder="Descrição do serviço"
-          className="h-8"
+          className="h-8 rounded-lg border-[#E1E8F5] focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
         />
       </td>
       <td className="py-1.5 pr-2">
         <select
           value={item.categoria}
           onChange={(e) => onUpdate(index, "categoria", e.target.value as ItemCategoria)}
-          className="h-8 w-full rounded-md border border-input bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+          className="h-8 w-full rounded-lg border border-[#E1E8F5] bg-white px-2 text-sm text-[#334155] focus:outline-none focus:ring-3 focus:ring-[#1E5BE6]/15 focus:border-[#1E5BE6]"
         >
           {CATEGORIAS.map((cat) => (
             <option key={cat} value={cat}>
@@ -130,7 +129,7 @@ function SortableRow({ item, index, onUpdate, onRemove }: SortableRowProps) {
           value={item.unidade}
           onChange={(e) => onUpdate(index, "unidade", e.target.value)}
           placeholder="un"
-          className="h-8"
+          className="h-8 rounded-lg border-[#E1E8F5] focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
         />
       </td>
       <td className="py-1.5 pr-2">
@@ -140,7 +139,7 @@ function SortableRow({ item, index, onUpdate, onRemove }: SortableRowProps) {
           step="0.01"
           value={item.quantidade}
           onChange={(e) => onUpdate(index, "quantidade", parseFloat(e.target.value) || 0)}
-          className="h-8"
+          className="h-8 rounded-lg border-[#E1E8F5] focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
         />
       </td>
       <td className="py-1.5 pr-2">
@@ -150,17 +149,17 @@ function SortableRow({ item, index, onUpdate, onRemove }: SortableRowProps) {
           step="0.01"
           value={item.valorUnitario}
           onChange={(e) => onUpdate(index, "valorUnitario", parseFloat(e.target.value) || 0)}
-          className="h-8"
+          className="h-8 rounded-lg border-[#E1E8F5] focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
         />
       </td>
-      <td className="py-1.5 pr-2 text-right tabular-nums">
+      <td className="py-1.5 pr-2 text-right tabular-nums text-[#0B1220] font-medium">
         {formatCurrency(item.quantidade * item.valorUnitario)}
       </td>
       <td className="py-1.5 text-center">
         <Button
           variant="ghost"
           size="sm"
-          className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+          className="h-8 w-8 p-0 text-[#9AA7BD] hover:text-[#C8434F] hover:bg-[#FBE9EA]"
           onClick={() => onRemove(index)}
         >
           <Trash2 className="w-4 h-4" />
@@ -356,8 +355,8 @@ export default function OrcamentoEditorPage() {
   if (loading) {
     return (
       <div className="flex flex-col gap-4 max-w-5xl">
-        <div className="h-8 w-72 bg-muted animate-pulse rounded" />
-        <div className="h-48 bg-muted animate-pulse rounded-lg" />
+        <div className="h-8 w-72 bg-[#F1F4F9] animate-pulse rounded-lg" />
+        <div className="h-48 bg-[#F1F4F9] animate-pulse rounded-2xl" />
       </div>
     );
   }
@@ -365,171 +364,195 @@ export default function OrcamentoEditorPage() {
   if (!orcamento) return null;
 
   return (
-    <div className="flex flex-col gap-6 max-w-5xl">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight">{orcamento.titulo}</h1>
+    <div className="flex flex-col max-w-5xl">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-2.5">
+          <h1 className="font-newsreader text-[26px] font-medium tracking-[-0.01em] text-[#0B1220]">
+            {orcamento.titulo}
+          </h1>
           <OrcamentoStatusBadge status={orcamento.status} />
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleDownloadPdf} disabled={generatingPdf}>
-            <FileDown className="w-4 h-4 mr-1.5" />
-            {generatingPdf ? "Gerando PDF…" : "Gerar PDF"}
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleDownloadPdf}
+          disabled={generatingPdf}
+          className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF]"
+        >
+          <FileDown className="w-4 h-4 mr-1.5" />
+          {generatingPdf ? "Gerando PDF…" : "Gerar PDF"}
+        </Button>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Cabeçalho do orçamento</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="titulo">Título</Label>
-                <Input
-                  id="titulo"
-                  value={titulo}
-                  onChange={(e) => setTitulo(e.target.value)}
-                  disabled={savingHeader}
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="validadeAt">Válido até</Label>
-                <Input
-                  id="validadeAt"
-                  type="date"
-                  value={validadeAt}
-                  onChange={(e) => setValidadeAt(e.target.value)}
-                  disabled={savingHeader}
-                />
-              </div>
-            </div>
+      {/* Cabeçalho */}
+      <section className="mt-8 pt-8 border-t border-[#EEF2F9]">
+        <p className="text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#9AA7BD] mb-4">
+          Cabeçalho do orçamento
+        </p>
+        <div className="flex flex-col gap-4 max-w-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="observacoes">Observações</Label>
-              <Textarea
-                id="observacoes"
-                value={observacoes}
-                onChange={(e) => setObservacoes(e.target.value)}
+              <Label htmlFor="titulo" className="text-[13px] font-medium text-[#334155]">Título</Label>
+              <Input
+                id="titulo"
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
                 disabled={savingHeader}
-                placeholder="Observações adicionais"
+                className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
               />
             </div>
-            <div className="flex items-center gap-3">
-              <Button size="sm" onClick={handleSaveHeader} disabled={savingHeader}>
-                {savingHeader ? "Salvando..." : "Salvar cabeçalho"}
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
-                  Alterar status
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  {STATUS_OPTIONS.map((opt) => (
-                    <DropdownMenuItem
-                      key={opt.value}
-                      onClick={() => handleStatusChange(opt.value)}
-                      className={orcamento.status === opt.value ? "font-medium" : ""}
-                    >
-                      {opt.label}
-                      {orcamento.status === opt.value && " ✓"}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="validadeAt" className="text-[13px] font-medium text-[#334155]">Válido até</Label>
+              <Input
+                id="validadeAt"
+                type="date"
+                value={validadeAt}
+                onChange={(e) => setValidadeAt(e.target.value)}
+                disabled={savingHeader}
+                className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
+              />
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Itens do orçamento</CardTitle>
-            <Button size="sm" variant="outline" onClick={addItem}>
-              <Plus className="w-4 h-4 mr-1.5" />
-              Adicionar item
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="observacoes" className="text-[13px] font-medium text-[#334155]">Observações</Label>
+            <Textarea
+              id="observacoes"
+              value={observacoes}
+              onChange={(e) => setObservacoes(e.target.value)}
+              disabled={savingHeader}
+              placeholder="Observações adicionais"
+              className="rounded-xl border-[#E1E8F5] px-3.5 py-2.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              onClick={handleSaveHeader}
+              disabled={savingHeader}
+              className="rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold"
+            >
+              {savingHeader ? "Salvando..." : "Salvar cabeçalho"}
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button variant="outline" size="sm" className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF]" />}>
+                Alterar status
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {STATUS_OPTIONS.map((opt) => (
+                  <DropdownMenuItem
+                    key={opt.value}
+                    onClick={() => handleStatusChange(opt.value)}
+                    className={orcamento.status === opt.value ? "font-medium text-[#1E5BE6]" : ""}
+                  >
+                    {opt.label}
+                    {orcamento.status === opt.value && " ✓"}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-muted-foreground">
-                    <th className="w-6 pb-2" />
-                    <th className="text-left pb-2 font-medium w-[28%]">Descrição</th>
-                    <th className="text-left pb-2 font-medium w-[15%]">Categoria</th>
-                    <th className="text-left pb-2 font-medium w-[8%]">Unidade</th>
-                    <th className="text-left pb-2 font-medium w-[10%]">Qtd</th>
-                    <th className="text-left pb-2 font-medium w-[12%]">Valor Unit.</th>
-                    <th className="text-right pb-2 font-medium w-[12%]">Total</th>
-                    <th className="w-[6%]" />
-                  </tr>
-                </thead>
-                <tbody>
-                  <SortableContext items={itens.map((i) => i.localId)} strategy={verticalListSortingStrategy}>
-                    {itens.length === 0 && (
-                      <tr>
-                        <td colSpan={8} className="py-6 text-center text-muted-foreground">
-                          Nenhum item. Clique em "Adicionar item" para começar.
-                        </td>
-                      </tr>
-                    )}
-                    {itens.map((item, i) => (
-                      <SortableRow
-                        key={item.localId}
-                        item={item}
-                        index={i}
-                        onUpdate={updateItem}
-                        onRemove={removeItem}
-                      />
-                    ))}
-                  </SortableContext>
-                </tbody>
-              </table>
-            </DndContext>
-          </div>
+        </div>
+      </section>
 
-          <div className="flex items-center justify-between mt-4 pt-4 border-t">
-            <div className="flex items-center gap-3">
-              <Button size="sm" onClick={() => saveItens(itens)} disabled={saveStatus === "saving"}>
-                {saveStatus === "saving" ? "Salvando..." : "Salvar itens"}
-              </Button>
-              {saveStatus === "saving" && (
-                <span className="text-sm text-muted-foreground">Salvando…</span>
-              )}
-              {saveStatus === "saved" && (
-                <span className="text-sm text-green-600">Salvo ✓</span>
-              )}
-              {saveStatus === "error" && (
-                <span className="text-sm text-red-600">Erro ao salvar</span>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Itens */}
+      <section className="mt-8 pt-8 border-t border-[#EEF2F9]">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#9AA7BD]">
+            Itens do orçamento
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={addItem}
+            className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF]"
+          >
+            <Plus className="w-4 h-4 mr-1.5" />
+            Adicionar item
+          </Button>
+        </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Totais</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-1.5 max-w-xs">
-            {CATEGORIAS.filter((cat) => subtotais[cat] > 0).map((cat) => (
-              <div key={cat} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{CATEGORIA_LABELS[cat]}:</span>
-                <span className="tabular-nums">{formatCurrency(subtotais[cat])}</span>
-              </div>
-            ))}
-            <div className="border-t mt-1 pt-1.5 flex justify-between font-semibold">
-              <span>Total geral:</span>
-              <span className="tabular-nums">{formatCurrency(totalGeral)}</span>
-            </div>
+        <div className="overflow-x-auto">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-[#EEF2F9] text-[11.5px] uppercase tracking-[0.04em] text-[#9AA7BD]">
+                  <th className="w-6 pb-2" />
+                  <th className="text-left pb-2 font-semibold w-[28%]">Descrição</th>
+                  <th className="text-left pb-2 font-semibold w-[15%]">Categoria</th>
+                  <th className="text-left pb-2 font-semibold w-[8%]">Unidade</th>
+                  <th className="text-left pb-2 font-semibold w-[10%]">Qtd</th>
+                  <th className="text-left pb-2 font-semibold w-[12%]">Valor Unit.</th>
+                  <th className="text-right pb-2 font-semibold w-[12%]">Total</th>
+                  <th className="w-[6%]" />
+                </tr>
+              </thead>
+              <tbody>
+                <SortableContext items={itens.map((i) => i.localId)} strategy={verticalListSortingStrategy}>
+                  {itens.length === 0 && (
+                    <tr>
+                      <td colSpan={8} className="py-6 text-center text-[#9AA7BD]">
+                        Nenhum item. Clique em "Adicionar item" para começar.
+                      </td>
+                    </tr>
+                  )}
+                  {itens.map((item, i) => (
+                    <SortableRow
+                      key={item.localId}
+                      item={item}
+                      index={i}
+                      onUpdate={updateItem}
+                      onRemove={removeItem}
+                    />
+                  ))}
+                </SortableContext>
+              </tbody>
+            </table>
+          </DndContext>
+        </div>
+
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#EEF2F9]">
+          <div className="flex items-center gap-3">
+            <Button
+              size="sm"
+              onClick={() => saveItens(itens)}
+              disabled={saveStatus === "saving"}
+              className="rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold"
+            >
+              {saveStatus === "saving" ? "Salvando..." : "Salvar itens"}
+            </Button>
+            {saveStatus === "saving" && (
+              <span className="text-sm text-[#9AA7BD]">Salvando…</span>
+            )}
+            {saveStatus === "saved" && (
+              <span className="text-sm text-[#1F9D63] font-medium">Salvo ✓</span>
+            )}
+            {saveStatus === "error" && (
+              <span className="text-sm text-[#C8434F] font-medium">Erro ao salvar</span>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
+
+      {/* Totais */}
+      <section className="mt-8 pt-8 border-t border-[#EEF2F9]">
+        <p className="text-[11.5px] font-semibold uppercase tracking-[0.06em] text-[#9AA7BD] mb-4">
+          Totais
+        </p>
+        <div className="flex flex-col gap-1.5 max-w-xs">
+          {CATEGORIAS.filter((cat) => subtotais[cat] > 0).map((cat) => (
+            <div key={cat} className="flex justify-between text-sm text-[#334155]">
+              <span className="text-[#6B7891]">{CATEGORIA_LABELS[cat]}:</span>
+              <span className="tabular-nums">{formatCurrency(subtotais[cat])}</span>
+            </div>
+          ))}
+          <div className="border-t border-[#EEF2F9] mt-1 pt-2 flex justify-between items-baseline">
+            <span className="font-medium text-[#0B1220]">Total geral:</span>
+            <span className="font-newsreader font-semibold text-[19px] text-[#1E5BE6] tabular-nums">
+              {formatCurrency(totalGeral)}
+            </span>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { Pencil, Archive, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -113,12 +112,8 @@ export default function ObraDetailPage() {
   if (loading) {
     return (
       <div className="flex flex-col gap-4 max-w-4xl">
-        <div className="h-8 w-64 bg-muted animate-pulse rounded" />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />
-          ))}
-        </div>
+        <div className="h-8 w-64 bg-[#F1F4F9] animate-pulse rounded-lg" />
+        <div className="h-28 bg-[#F1F4F9] animate-pulse rounded-2xl" />
       </div>
     );
   }
@@ -129,26 +124,36 @@ export default function ObraDetailPage() {
   const alerta = obra.percentualConsumido !== null && obra.percentualConsumido > 80;
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl">
+    <div className="flex flex-col gap-8 max-w-4xl">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl font-semibold tracking-tight">{obra.nome}</h1>
+            <h1 className="font-newsreader text-[26px] font-medium tracking-[-0.01em] text-[#0B1220]">
+              {obra.nome}
+            </h1>
             <ObraStatusBadge status={obra.status} />
             {alerta && (
-              <Badge className="bg-red-100 text-red-700 hover:bg-red-100">
+              <Badge className="bg-[#FBE9EA] text-[#C8434F] hover:bg-[#FBE9EA] rounded-full border-transparent">
                 Atenção: {percentual} consumido
               </Badge>
             )}
           </div>
-          {obra.cliente && <p className="text-muted-foreground">{obra.cliente}</p>}
-          {obra.endereco && <p className="text-sm text-muted-foreground">{obra.endereco}</p>}
+          {obra.cliente && <p className="text-[#334155]">{obra.cliente}</p>}
+          {obra.endereco && <p className="text-sm text-[#6B7891]">{obra.endereco}</p>}
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF]"
+                />
+              }
+            >
               Alterar status
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -169,6 +174,7 @@ export default function ObraDetailPage() {
             variant="outline"
             size="sm"
             onClick={() => router.push(`/dashboard/obras/${obra.id}/editar`)}
+            className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF]"
           >
             <Pencil className="w-4 h-4 mr-1.5" />
             Editar
@@ -176,7 +182,14 @@ export default function ObraDetailPage() {
 
           <AlertDialog>
             <AlertDialogTrigger
-              render={<Button variant="outline" size="sm" disabled={archiving} />}
+              render={
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={archiving}
+                  className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF]"
+                />
+              }
             >
               <Archive className="w-4 h-4 mr-1.5" />
               Arquivar
@@ -201,66 +214,52 @@ export default function ObraDetailPage() {
       </div>
 
       {/* Resumo financeiro */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-1 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Contratado
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-xl font-semibold">{formatCurrency(obra.valorContrato)}</p>
-          </CardContent>
-        </Card>
+      <div className="rounded-2xl border border-[#EEF2F9] shadow-[0_10px_30px_rgba(20,50,120,0.06)] grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#EEF2F9]">
+        <div className="px-5 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Contratado</p>
+          <p className="font-newsreader text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+            {formatCurrency(obra.valorContrato)}
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-1 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total orçado
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-xl font-semibold">{formatCurrency(obra.totalOrcado)}</p>
-          </CardContent>
-        </Card>
+        <div className="px-5 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Total orçado</p>
+          <p className="font-newsreader text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+            {formatCurrency(obra.totalOrcado)}
+          </p>
+        </div>
 
-        <Card className={alerta ? "border-red-200" : ""}>
-          <CardHeader className="pb-1 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total gasto
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className={`text-xl font-semibold ${alerta ? "text-red-600" : ""}`}>
-              {formatCurrency(obra.totalGasto)}
+        <div className="px-5 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Total gasto</p>
+          <p
+            className={`font-newsreader text-[21px] font-semibold mt-1 tabular-nums ${
+              alerta ? "text-[#C8434F]" : "text-[#0B1220]"
+            }`}
+          >
+            {formatCurrency(obra.totalGasto)}
+          </p>
+          {percentual && (
+            <p className={`text-[11.5px] mt-0.5 ${alerta ? "text-[#C8434F] font-medium" : "text-[#9AA7BD]"}`}>
+              {percentual} do contrato
             </p>
-            {percentual && (
-              <p className={`text-xs mt-0.5 ${alerta ? "text-red-500" : "text-muted-foreground"}`}>
-                {percentual} do contrato
-              </p>
-            )}
-          </CardContent>
-        </Card>
+          )}
+        </div>
 
-        <Card>
-          <CardHeader className="pb-1 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Saldo
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-xl font-semibold">{formatCurrency(obra.saldo)}</p>
-          </CardContent>
-        </Card>
+        <div className="px-5 py-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Saldo</p>
+          <p className="font-newsreader text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+            {formatCurrency(obra.saldo)}
+          </p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Orçamentos</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Orçamentos</p>
           <Button
-            variant="default"
             size="sm"
             onClick={() => router.push(`/dashboard/obras/${obra.id}/orcamentos/nova`)}
+            className="rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_8px_18px_rgba(30,91,230,0.22)]"
           >
             <Plus className="w-4 h-4 mr-1.5" />
             Novo orçamento
@@ -269,30 +268,27 @@ export default function ObraDetailPage() {
 
         {loadingOrcamentos ? (
           <div className="flex flex-col gap-2">
-            <div className="h-10 bg-muted animate-pulse rounded" />
-            <div className="h-10 bg-muted animate-pulse rounded" />
+            <div className="h-10 bg-[#F1F4F9] animate-pulse rounded-xl" />
+            <div className="h-10 bg-[#F1F4F9] animate-pulse rounded-xl" />
           </div>
         ) : orcamentos.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Nenhum orçamento ainda. Crie o primeiro.
-          </p>
+          <p className="text-sm text-[#6B7891]">Nenhum orçamento ainda. Crie o primeiro.</p>
         ) : (
-          <div className="flex flex-col gap-1">
+          <div className="rounded-2xl border border-[#EEF2F9] divide-y divide-[#EEF2F9] overflow-hidden">
             {orcamentos.map((orc) => (
               <div
                 key={orc.id}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-md border hover:bg-muted/50 cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-[#F7FAFF] cursor-pointer transition-colors"
                 onClick={() => router.push(`/dashboard/orcamentos/${orc.id}`)}
               >
-                <span className="font-medium flex-1">{orc.titulo}</span>
-                <span className="text-xs text-muted-foreground">v{orc.versao}</span>
+                <span className="font-medium flex-1 text-[#0B1220] text-[14px]">{orc.titulo}</span>
+                <span className="text-xs text-[#9AA7BD]">v{orc.versao}</span>
                 <OrcamentoStatusBadge status={orc.status} />
-                <span className="text-sm text-muted-foreground w-24 text-right">
+                <span className="text-sm text-[#6B7891] w-24 text-right tabular-nums">
                   {orc.validadeAt
                     ? new Date(orc.validadeAt).toLocaleDateString("pt-BR")
                     : "—"}
                 </span>
-                <span className="text-sm text-muted-foreground w-8 text-right">—</span>
               </div>
             ))}
           </div>
@@ -302,19 +298,20 @@ export default function ObraDetailPage() {
       {/* Gastos recentes */}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Gastos recentes</h2>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Gastos recentes</p>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => router.push(`/dashboard/obras/${obra.id}/relatorio`)}
+              className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF]"
             >
               Relatório
             </Button>
             <Button
-              variant="default"
               size="sm"
               onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos`)}
+              className="rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_8px_18px_rgba(30,91,230,0.22)]"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Ver gastos
@@ -324,37 +321,37 @@ export default function ObraDetailPage() {
 
         {loadingGastos ? (
           <div className="flex flex-col gap-2">
-            <div className="h-10 bg-muted animate-pulse rounded" />
-            <div className="h-10 bg-muted animate-pulse rounded" />
+            <div className="h-10 bg-[#F1F4F9] animate-pulse rounded-xl" />
+            <div className="h-10 bg-[#F1F4F9] animate-pulse rounded-xl" />
           </div>
         ) : gastosRecentes.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[#6B7891]">
             Nenhum gasto registrado.{" "}
             <button
-              className="underline text-foreground"
+              className="text-[#1E5BE6] font-medium hover:underline"
               onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos/novo`)}
             >
               Registrar o primeiro
             </button>
           </p>
         ) : (
-          <div className="flex flex-col gap-1">
+          <div className="rounded-2xl border border-[#EEF2F9] divide-y divide-[#EEF2F9] overflow-hidden">
             {gastosRecentes.map((g) => (
               <div
                 key={g.id}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-md border hover:bg-muted/50 cursor-pointer"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-[#F7FAFF] cursor-pointer transition-colors"
                 onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos`)}
               >
-                <span className="font-medium flex-1">{g.descricao}</span>
-                <span className="text-xs text-muted-foreground">{CATEGORIA_LABELS[g.categoria]}</span>
-                <span className="text-sm font-medium">
+                <span className="font-medium flex-1 text-[#0B1220] text-[14px]">{g.descricao}</span>
+                <span className="text-xs text-[#9AA7BD]">{CATEGORIA_LABELS[g.categoria]}</span>
+                <span className="text-sm font-medium text-[#0B1220] tabular-nums">
                   {parseFloat(g.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                 </span>
               </div>
             ))}
             {gastosRecentes.length === 3 && (
               <button
-                className="text-xs text-muted-foreground hover:text-foreground text-left px-3 pt-1"
+                className="text-xs text-[#1E5BE6] font-medium hover:underline text-left px-4 py-2.5 bg-white w-full"
                 onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos`)}
               >
                 Ver todos os gastos →

@@ -14,7 +14,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { gastosApi, type ResumoFinanceiro, CATEGORIA_LABELS } from "@/lib/gastos";
 
 function formatCurrency(value: number | null) {
@@ -31,10 +30,18 @@ function formatMes(mes: string) {
 function TooltipCurrency({ active, payload, label }: { active?: boolean; payload?: { value: number }[]; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border bg-background p-2 shadow-sm text-sm">
-      <p className="font-medium mb-1">{label}</p>
-      <p>{formatCurrency(payload[0].value)}</p>
+    <div className="rounded-xl border border-[#E1E8F5] bg-white px-3 py-2 shadow-[0_10px_30px_rgba(20,50,120,0.10)] text-sm">
+      <p className="text-[12px] text-[#6B7891] mb-0.5">{label}</p>
+      <p className="font-newsreader font-semibold text-[#0B1220]">{formatCurrency(payload[0].value)}</p>
     </div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD] mb-3">
+      {children}
+    </p>
   );
 }
 
@@ -53,14 +60,10 @@ export default function RelatorioPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-4 max-w-4xl">
-        <div className="h-8 w-48 bg-muted animate-pulse rounded" />
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />
-          ))}
-        </div>
-        <div className="h-64 bg-muted animate-pulse rounded-lg" />
+      <div className="flex flex-col gap-6 max-w-4xl">
+        <div className="h-8 w-48 bg-[#F1F4F9] animate-pulse rounded-lg" />
+        <div className="h-16 bg-[#F1F4F9] animate-pulse rounded-xl" />
+        <div className="h-64 bg-[#F1F4F9] animate-pulse rounded-2xl" />
       </div>
     );
   }
@@ -80,161 +83,143 @@ export default function RelatorioPage() {
   const alerta = resumo.totalContrato !== null && resumo.totalContrato > 0
     && resumo.totalGasto / resumo.totalContrato > 0.8;
 
+  const saldoNegativo = resumo.saldo !== null && resumo.saldo < 0;
+
   return (
-    <div className="flex flex-col gap-6 max-w-4xl">
-      <h2 className="text-xl font-semibold">Relatório financeiro</h2>
+    <div className="flex flex-col gap-8 max-w-4xl">
+      <h1 className="font-newsreader text-[26px] font-medium tracking-[-0.01em] text-[#0B1220]">
+        Relatório financeiro
+      </h1>
 
-      {/* Cards resumo */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="pb-1 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total contratado
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-xl font-semibold">{formatCurrency(resumo.totalContrato)}</p>
-          </CardContent>
-        </Card>
+      {/* Faixa de números-chave */}
+      <div className="flex flex-wrap gap-x-10 gap-y-4 sm:divide-x sm:divide-[#EEF2F9]">
+        <div className="sm:pr-10">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">
+            Total contratado
+          </p>
+          <p className="font-newsreader text-[26px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+            {formatCurrency(resumo.totalContrato)}
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-1 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total orçado
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className="text-xl font-semibold">{formatCurrency(resumo.totalOrcado)}</p>
-          </CardContent>
-        </Card>
+        <div className="sm:px-10">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">
+            Total orçado
+          </p>
+          <p className="font-newsreader text-[26px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+            {formatCurrency(resumo.totalOrcado)}
+          </p>
+        </div>
 
-        <Card className={alerta ? "border-red-200" : ""}>
-          <CardHeader className="pb-1 pt-4 px-4">
-            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              Total gasto
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <p className={`text-xl font-semibold ${alerta ? "text-red-600" : ""}`}>
-              {formatCurrency(resumo.totalGasto)}
+        <div className="sm:pl-10">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">
+            Total gasto
+          </p>
+          <p className={`font-newsreader text-[26px] font-semibold mt-1 tabular-nums ${alerta ? "text-[#C8434F]" : "text-[#0B1220]"}`}>
+            {formatCurrency(resumo.totalGasto)}
+          </p>
+          {resumo.totalContrato && resumo.totalContrato > 0 && (
+            <p className={`text-[12.5px] mt-0.5 ${alerta ? "text-[#C8434F] font-medium" : "text-[#6B7891]"}`}>
+              {((resumo.totalGasto / resumo.totalContrato) * 100).toFixed(1)}% do contrato
             </p>
-            {resumo.totalContrato && resumo.totalContrato > 0 && (
-              <p className={`text-xs mt-0.5 ${alerta ? "text-red-500" : "text-muted-foreground"}`}>
-                {((resumo.totalGasto / resumo.totalContrato) * 100).toFixed(1)}% do contrato
-              </p>
-            )}
-          </CardContent>
-        </Card>
+          )}
+        </div>
       </div>
 
       {/* Comparativo orçado vs. realizado */}
-      <Card>
-        <CardHeader className="px-6 pt-5 pb-3">
-          <CardTitle className="text-sm font-semibold">Orçado vs. Realizado</CardTitle>
-        </CardHeader>
-        <CardContent className="px-6 pb-5">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left py-2 font-medium text-muted-foreground">Métrica</th>
-                <th className="text-right py-2 font-medium text-muted-foreground">Valor</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              <tr>
-                <td className="py-2">Valor contratado</td>
-                <td className="py-2 text-right font-medium">{formatCurrency(resumo.totalContrato)}</td>
-              </tr>
-              <tr>
-                <td className="py-2">Total orçado (aprovados)</td>
-                <td className="py-2 text-right font-medium">{formatCurrency(resumo.totalOrcado)}</td>
-              </tr>
-              <tr>
-                <td className="py-2">Total gasto</td>
-                <td className={`py-2 text-right font-semibold ${alerta ? "text-red-600" : ""}`}>
-                  {formatCurrency(resumo.totalGasto)}
-                </td>
-              </tr>
-              <tr>
-                <td className="py-2">Saldo disponível</td>
-                <td className={`py-2 text-right font-semibold ${resumo.saldo !== null && resumo.saldo < 0 ? "text-red-600" : "text-green-600"}`}>
-                  {formatCurrency(resumo.saldo)}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </CardContent>
-      </Card>
+      <div>
+        <SectionLabel>Orçado vs. realizado</SectionLabel>
+        <table className="w-full text-sm">
+          <tbody className="divide-y divide-[#EEF2F9]">
+            <tr>
+              <td className="py-2.5 text-[#334155]">Valor contratado</td>
+              <td className="py-2.5 text-right font-medium text-[#0B1220] tabular-nums">
+                {formatCurrency(resumo.totalContrato)}
+              </td>
+            </tr>
+            <tr>
+              <td className="py-2.5 text-[#334155]">Total orçado (aprovados)</td>
+              <td className="py-2.5 text-right font-medium text-[#0B1220] tabular-nums">
+                {formatCurrency(resumo.totalOrcado)}
+              </td>
+            </tr>
+            <tr>
+              <td className="py-2.5 text-[#334155]">Total gasto</td>
+              <td className={`py-2.5 text-right font-semibold tabular-nums ${alerta ? "text-[#C8434F]" : "text-[#0B1220]"}`}>
+                {formatCurrency(resumo.totalGasto)}
+              </td>
+            </tr>
+            <tr className="bg-[#EEF3FF]">
+              <td className="py-2.5 pl-2 rounded-l-xl font-semibold text-[#0B1220]">Saldo disponível</td>
+              <td className={`py-2.5 pr-2 rounded-r-xl text-right font-newsreader font-semibold tabular-nums ${saldoNegativo ? "text-[#C8434F]" : "text-[#1F9D63]"}`}>
+                {formatCurrency(resumo.saldo)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       {/* Gráfico por categoria */}
       {categoriaData.length > 0 && (
-        <Card>
-          <CardHeader className="px-6 pt-5 pb-3">
-            <CardTitle className="text-sm font-semibold">Gastos por categoria</CardTitle>
-          </CardHeader>
-          <CardContent className="px-6 pb-5">
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={categoriaData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-                />
-                <Tooltip content={<TooltipCurrency />} />
-                <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <div>
+          <SectionLabel>Gastos por categoria</SectionLabel>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={categoriaData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#EEF2F9" vertical={false} />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 12, fill: "#9AA7BD" }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 12, fill: "#9AA7BD" }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
+              />
+              <Tooltip content={<TooltipCurrency />} cursor={{ fill: "#F7FAFF" }} />
+              <Bar dataKey="total" fill="#1E5BE6" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {/* Gráfico evolução mensal */}
       {mesData.length > 0 && (
-        <Card>
-          <CardHeader className="px-6 pt-5 pb-3">
-            <CardTitle className="text-sm font-semibold">Evolução mensal de gastos</CardTitle>
-          </CardHeader>
-          <CardContent className="px-6 pb-5">
-            <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={mesData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
-                />
-                <Tooltip content={<TooltipCurrency />} />
-                <Line
-                  type="monotone"
-                  dataKey="total"
-                  stroke="hsl(var(--primary))"
-                  strokeWidth={2}
-                  dot={{ fill: "hsl(var(--primary))", r: 4 }}
-                  activeDot={{ r: 6 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+        <div>
+          <SectionLabel>Evolução mensal de gastos</SectionLabel>
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={mesData} margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#EEF2F9" vertical={false} />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 12, fill: "#9AA7BD" }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 12, fill: "#9AA7BD" }}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(v) => `R$${(v / 1000).toFixed(0)}k`}
+              />
+              <Tooltip content={<TooltipCurrency />} cursor={{ stroke: "#E1E8F5" }} />
+              <Line
+                type="monotone"
+                dataKey="total"
+                stroke="#1E5BE6"
+                strokeWidth={2.5}
+                dot={{ fill: "#1E5BE6", r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {categoriaData.length === 0 && mesData.length === 0 && (
-        <p className="text-sm text-muted-foreground">
+        <p className="text-[14px] text-[#6B7891]">
           Nenhum gasto registrado para gerar gráficos.
         </p>
       )}
