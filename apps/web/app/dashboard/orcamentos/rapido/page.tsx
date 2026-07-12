@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,18 +18,22 @@ import { downloadBlob } from "@/lib/demo-api";
 import type { TipoOficio } from "@enge-pro/shared";
 
 type Condicoes = { pagamento: string; validadeDias: number; observacoes: string };
+type GeneratedFile = { blob: Blob; filename: string };
 
 export default function OrcamentoRapidoPage() {
   const [oficio, setOficio] = useState<TipoOficio | null>(null);
   const [servicos, setServicos] = useState<ServicoState | null>(null);
   const [clienteNome, setClienteNome] = useState("");
   const [clienteEndereco, setClienteEndereco] = useState("");
+  const [clienteTelefone, setClienteTelefone] = useState("");
   const [condicoes, setCondicoes] = useState<Condicoes>({
     pagamento: "",
     validadeDias: 15,
     observacoes: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [generatedFile, setGeneratedFile] = useState<GeneratedFile | null>(null);
 
   function handleOficioChange(novoOficio: TipoOficio) {
     setOficio(novoOficio);
@@ -95,18 +100,61 @@ export default function OrcamentoRapidoPage() {
     return servicos.itens.some((i) => i.checked && i.quantidade > 0);
   }
 
-  async function handleGerar() {
+  async function gerarPdf(): Promise<GeneratedFile | null> {
     const payload = buildPayload();
-    if (!payload) return;
+    if (!payload) return null;
+    const blob = await orcamentosApi.gerarRapido(payload);
+    const hoje = new Date().toISOString().slice(0, 10);
+    return { blob, filename: `orcamento-rapido-${hoje}.pdf` };
+  }
+
+  async function handleGerar() {
     setIsLoading(true);
     try {
-      const blob = await orcamentosApi.gerarRapido(payload);
-      const hoje = new Date().toISOString().slice(0, 10);
-      downloadBlob(blob, `orcamento-rapido-${hoje}.pdf`);
+      const file = await gerarPdf();
+      if (!file) return;
+      downloadBlob(file.blob, file.filename);
+      setGeneratedFile(file);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao gerar o PDF. Tente novamente.");
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function handleEnviarWhatsApp() {
+    setIsSharing(true);
+    try {
+      let file = generatedFile;
+      if (!file) {
+        file = await gerarPdf();
+        if (!file) return;
+        setGeneratedFile(file);
+      }
+
+      const pdfFile = new File([file.blob], file.filename, { type: "application/pdf" });
+      const canShareFile =
+        typeof navigator.canShare === "function" && navigator.canShare({ files: [pdfFile] });
+
+      if (canShareFile) {
+        try {
+          await navigator.share({ files: [pdfFile], title: "Orçamento" });
+        } catch {
+          // Usuário cancelou o menu de compartilhamento — não é um erro.
+        }
+        return;
+      }
+
+      downloadBlob(file.blob, file.filename);
+      const digits = clienteTelefone.replace(/\D/g, "");
+      const text = encodeURIComponent("Segue o orçamento — anexe o PDF que acabou de baixar.");
+      const waUrl = digits ? `https://wa.me/55${digits}?text=${text}` : `https://wa.me/?text=${text}`;
+      window.open(waUrl, "_blank");
+      toast.info("PDF baixado — anexe o arquivo na conversa do WhatsApp que abrimos.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao preparar envio pelo WhatsApp.");
+    } finally {
+      setIsSharing(false);
     }
   }
 
@@ -165,6 +213,18 @@ export default function OrcamentoRapidoPage() {
               className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
             />
           </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="cliente-telefone" className="text-[13px] font-medium text-[#334155]">
+              WhatsApp do cliente (opcional)
+            </Label>
+            <Input
+              id="cliente-telefone"
+              placeholder="Ex: (11) 91234-5678"
+              value={clienteTelefone}
+              onChange={(e) => setClienteTelefone(e.target.value)}
+              className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
+            />
+          </div>
         </div>
       )}
 
@@ -187,14 +247,26 @@ export default function OrcamentoRapidoPage() {
                 {formatBRL(totalGeral)}
               </p>
             </div>
-            <Button
-              size="lg"
-              onClick={handleGerar}
-              disabled={!isValid() || isLoading}
-              className="min-w-36 rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_10px_24px_rgba(30,91,230,0.28)]"
-            >
-              {isLoading ? "Gerando PDF..." : "Gerar PDF"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={handleEnviarWhatsApp}
+                disabled={!isValid() || isSharing}
+                className="rounded-full border-[#25D366]/40 text-[#128C4A] hover:bg-[#25D366]/10 font-semibold"
+              >
+                <MessageCircle className="size-4 mr-1.5" />
+                {isSharing ? "Preparando..." : "Enviar por WhatsApp"}
+              </Button>
+              <Button
+                size="lg"
+                onClick={handleGerar}
+                disabled={!isValid() || isLoading}
+                className="min-w-36 rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_10px_24px_rgba(30,91,230,0.28)]"
+              >
+                {isLoading ? "Gerando PDF..." : "Gerar PDF"}
+              </Button>
+            </div>
           </div>
         </div>
       )}
