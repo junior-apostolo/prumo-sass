@@ -1,11 +1,31 @@
 # State
 
-**Last Updated:** 2026-06-19
-**Current Work:** Fase 6 — Polish e lançamento (próximo milestone). M5 concluído hoje (RF-30 logo upload deferred — aguarda conta R2/S3).
+**Last Updated:** 2026-07-12
+**Current Work:** Fase 6 — Polish e lançamento (próximo milestone). Pausa para implementar 2 features de growth (Orçamento Rápido como porta de entrada + CTA de upgrade no alerta financeiro) motivadas por pesquisa de mercado de 2026-07-12.
 
 ---
 
 ## Completed Milestones
+
+### Growth — Orçamento Rápido como porta de entrada + CTA de upgrade (concluído P1, 2026-07-12)
+
+**Origem:** pesquisa de mercado de 2026-07-12 (baixa adesão digital do público-alvo — 61% usa caderno; preferência estrutural por WhatsApp; nenhum concorrente nacional com tração visível).
+**Specs:** `.specs/features/orcamento-rapido-porta-entrada/spec.md` · `.specs/features/alerta-financeiro-upgrade/spec.md`
+**Commits:** `a5774b6` · `7ddab17` · `eb14fcf` · `afaae74`
+
+**Entregue (P1 de ambas as specs):**
+- `apps/web/app/dashboard/page.tsx` — redirect de `/dashboard` passa a ser `/dashboard/orcamentos/rapido` (era `/dashboard/obras`)
+- `apps/web/app/dashboard/layout.tsx` — "Orçamento Rápido" vira primeiro item do nav e destino do logo PRUMO
+- `apps/api/src/pdf/orcamento-rapido.tsx` — rodapé do PDF autenticado ganha chamada discreta "Gerado com PRUMO" (sem URL — domínio ainda não registrado)
+- `apps/web/app/dashboard/orcamentos/rapido/page.tsx` — botão "Enviar por WhatsApp" (Web Share API com PDF anexado; fallback `wa.me` quando o navegador não suporta compartilhamento de arquivo) + campo opcional "WhatsApp do cliente" para pré-preencher o fallback
+- `apps/web/app/dashboard/obras/[id]/page.tsx` — CTA "Quer mais controle? Fale sobre o Pro" ao lado do badge de alerta (`percentualConsumido > 80`, RF-26), abrindo WhatsApp
+- `apps/web/.env.example` — nova var `NEXT_PUBLIC_UPGRADE_WHATSAPP_NUMBER` (vazia por padrão; CTA fica oculto até ser configurada)
+
+**Deferred (P2 de ambas as specs — não implementado):**
+- Cobrança avulsa por Orçamento Rápido individual (sem assinatura) — bloqueado até escolher gateway de pagamento (Asaas/Pagar.me/Pix)
+- Registro de clique do CTA de upgrade (para medir taxa de conversão do gatilho) — não implementado nesta rodada
+
+---
 
 ### LP — Landing Page (concluído 2026-06-07)
 
@@ -334,6 +354,8 @@ Ver `.specs/quick/001-fix-demo-pdf-middleware/TASK.md`.
 - [ ] Google OAuth (RF-02) — aguarda DA-01 (nome/domínio) e DA-04
 - [ ] Refresh token — implementar junto com RF-05 (sessões 30 dias) se houver tempo no MVP
 - [ ] Upload de comprovante de gasto (campo `comprovante` no modelo `Gasto`) — campo existe no schema mas UI de upload fica para v1.1
+- [ ] Cobrança avulsa por Orçamento Rápido individual (F-ORC-RAPIDO-GROWTH, P2) — depende de escolher gateway de pagamento
+- [ ] Registro de clique do CTA de upgrade financeiro (F-FINANCEIRO-UPGRADE, P2) — validar taxa de conversão do gatilho antes de investir em billing completo
 
 ---
 
@@ -343,6 +365,8 @@ Ver `.specs/quick/001-fix-demo-pdf-middleware/TASK.md`.
 - [ ] Decidir provedor de email (DA-05) — Resend recomendado — desbloqueador para B-002
 - [ ] Abrir conta no Railway e Vercel antes de iniciar Fase 6
 - [ ] Abrir conta no Cloudflare R2 ou AWS S3 antes de T-098 (upload de logo)
+- [ ] Registrar domínio do PRUMO e definir `NEXT_PUBLIC_UPGRADE_WHATSAPP_NUMBER` — sem isso, o branding do PDF fica sem URL e o CTA de upgrade financeiro fica oculto
+- [ ] Escolher gateway de pagamento (Asaas/Pagar.me/Pix) — desbloqueia cobrança avulsa do Orçamento Rápido (v1.2) e feature-gating real do plano Pro
 
 ---
 
