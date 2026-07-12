@@ -25,6 +25,14 @@ export type UpsertItemInput = {
   ordem: number;
 };
 
+export type OrcamentoRapidoLogItem = {
+  id: string;
+  clienteNome: string;
+  oficio: string;
+  valorTotal: string;
+  createdAt: string;
+};
+
 export const orcamentosApi = {
   list: (obraId: string) => api.get<OrcamentoDTO[]>(`/obras/${obraId}/orcamentos`),
   create: (obraId: string, data: CreateOrcamentoInput) =>
@@ -40,4 +48,5 @@ export const orcamentosApi = {
   downloadPdf: (id: string) => api.blob(`/orcamentos/${id}/pdf`),
   gerarRapido: (payload: OrcamentoRapidoPayload) =>
     api.blob("/orcamentos/rapido/pdf", { method: "POST", body: payload }),
+  listarHistoricoRapido: () => api.get<OrcamentoRapidoLogItem[]>("/orcamentos/rapido/historico"),
 };
