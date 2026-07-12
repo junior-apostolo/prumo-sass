@@ -1,11 +1,29 @@
 # State
 
 **Last Updated:** 2026-07-12
-**Current Work:** Fase 6 — Polish e lançamento (próximo milestone). Pausa para implementar 2 features de growth (Orçamento Rápido como porta de entrada + CTA de upgrade no alerta financeiro) motivadas por pesquisa de mercado de 2026-07-12, seguida da feature de máscaras de contato (telefone/CNPJ/CPF/email).
+**Current Work:** Fase 6 — Polish e lançamento (próximo milestone). Pausa para implementar 2 features de growth (Orçamento Rápido como porta de entrada + CTA de upgrade no alerta financeiro) motivadas por pesquisa de mercado de 2026-07-12, seguida da feature de máscaras de contato (telefone/CNPJ/CPF/email) e do histórico leve de Orçamento Rápido (feedback pós-geração + listagem de controle).
 
 ---
 
 ## Completed Milestones
+
+### Orçamento Rápido — feedback pós-geração + histórico leve (concluído, 2026-07-12)
+
+**Spec:** `.specs/features/orcamento-rapido-historico/spec.md` · **Design:** `.specs/features/orcamento-rapido-historico/design.md`
+**Commits:** `8373698` · `f5a42c6` · `0bb3078` · `6106156` · `4c0814d` · `cb67f92`
+
+**Origem:** feedback direto do usuário — depois de gerar o PDF ou enviar por WhatsApp, a tela ficava idêntica sem confirmação de sucesso; usuário também pediu uma listagem dos últimos orçamentos rápidos "só para questão de controle".
+
+**Entregue:**
+- `packages/db/prisma/schema.prisma` — novo model `OrcamentoRapidoLog` (workspaceId, clienteNome, oficio, valorTotal, createdAt) + migration `20260712205115_add_orcamento_rapido_log`
+- `apps/api/src/repositories/orcamento-rapido-log.repository.ts` — `create()` e `listRecent(workspaceId, limit=10)`
+- `apps/api/src/routes/orcamentos-rapido.ts` — `POST /orcamentos/rapido/pdf` registra o log após gerar o PDF com sucesso (não bloqueante — falha no log não impede o download); novo `GET /orcamentos/rapido/historico`
+- `apps/web/lib/orcamentos.ts` — `orcamentosApi.listarHistoricoRapido()`
+- `apps/web/app/dashboard/orcamentos/rapido/page.tsx` — toast de sucesso + reset completo do formulário após gerar PDF ou enviar por WhatsApp (cancelar o compartilhamento nativo NÃO reseta); seção "Últimos orçamentos" no topo da tela, carregada no mount e atualizada após cada geração
+
+**Sem pendências** — feature completa, sem itens deferred.
+
+---
 
 ### Máscaras de Contato — telefone, CNPJ/CPF, email (concluído, 2026-07-12)
 
@@ -225,6 +243,15 @@
 
 ## Recent Decisions (Last 60 days)
 
+### AD-013: Orçamento Rápido passa a ter um registro leve, revertendo parte de AD/M3.5 (2026-07-12)
+
+**Decision:** O Orçamento Rápido deixa de ser 100% transiente. Agora um registro-resumo (`OrcamentoRapidoLog`: clienteNome, oficio, valorTotal, createdAt) é persistido por PDF gerado, para alimentar uma listagem de "últimos orçamentos" na tela.
+**Reason:** Feedback direto do usuário pedindo controle sobre o que já foi gerado. Decidido junto com o usuário que a persistência seria propositalmente leve — sem itens, sem o PDF em si — para não contradizer a proposta de valor de "sem fricção, nada é salvo" além do necessário para o controle pedido.
+**Trade-off:** Não é possível reabrir/rebaixar o PDF a partir do histórico — só serve como registro de controle (cliente, ofício, valor, data). Se o usuário quiser reemitir, precisa preencher de novo.
+**Impact:** `.specs/features/orcamento-rapido/spec.md` atualizada — "Histórico de orçamentos rápidos gerados" não é mais "fora de escopo". Qualquer mudança futura no Orçamento Rápido deve considerar que agora existe esse log leve sendo escrito a cada geração.
+
+---
+
 ### AD-012: Orçamento Rápido reutiliza componentes da demo pública (2026-06-19)
 
 **Decision:** A página `/dashboard/orcamentos/rapido` reutiliza diretamente `StepOficio`, `StepServicos` e `StepCondicoes` de `apps/web/components/demo/`, em vez de criar componentes novos.
@@ -343,6 +370,7 @@
 - **Multiple React instances em monorepo + @react-pdf/renderer:** Instalar `react` em um workspace com versão diferente da raiz cria dois Reacts em memória. Os `Symbol()` JSX não coincidem e o reconciliador lança `Cannot read properties of null`. Solução: alinhar todas as versões de React no monorepo. Ver AD-011.
 - **Rotas BFF públicas precisam ser liberadas separadamente da página no middleware:** tornar uma página pública (`PUBLIC_ROUTES`) não libera automaticamente as rotas de API que ela chama (`/api/...`). Como `fetch()` segue redirects por padrão, um bloqueio silencioso no middleware (redirect 307 para `/login`) é mascarado como sucesso (200) no cliente, entregando HTML no lugar do payload esperado. Sempre adicionar o prefixo `/api/<feature>` correspondente a `STATIC_PUBLIC_PREFIXES` junto com a página pública.
 - **`@react-pdf/renderer` e componente wrapper:** `renderToBuffer` espera o elemento `<Document>` diretamente. Ao passar `<MeuComponente />` (que retorna um Document), chamar o componente como função `MeuComponente({ payload })` antes de passar ao `renderToBuffer` evita que o reconciliador receba um tipo desconhecido.
+- **`prisma generate` trava no Windows se algum processo node já importou o Prisma Client:** `EPERM: operation not permitted, rename ...query_engine-windows.dll.node.tmp... -> ...query_engine-windows.dll.node`. Acontece porque um processo node rodando (ex.: servidor de dev via `tsx watch` ou `next dev`) mantém o `.dll.node` do engine aberto. Solução: encerrar os processos `node.exe` (`Get-Process node | Stop-Process -Force`) antes de rodar `prisma generate`, e reiniciar os servidores de dev manualmente depois. Isso aconteceu ao adicionar `OrcamentoRapidoLog` (ver AD-013) — os servidores de dev do usuário precisam ser reiniciados manualmente após essa sessão.
 
 ---
 
