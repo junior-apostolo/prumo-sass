@@ -91,31 +91,33 @@ export function Preview({ oficio, prestador, cliente, servicos, condicoes }: Pro
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="text-xl font-semibold">Pronto para gerar!</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="font-newsreader text-[22px] font-medium tracking-[-0.01em] text-[#0B1220]">
+          Pronto para gerar!
+        </h2>
+        <p className="text-[14px] text-[#6B7891] mt-1">
           Confira o resumo antes de baixar o PDF.
         </p>
       </div>
 
       {/* Summary card */}
-      <div className="rounded-xl border divide-y text-sm">
+      <div className="rounded-xl border border-[#EEF2F9] divide-y divide-[#EEF2F9] text-sm">
         <div className="flex justify-between px-4 py-3">
-          <span className="text-muted-foreground">Ofício</span>
-          <span className="font-medium">{OFICIO_LABELS[oficio]}</span>
+          <span className="text-[#6B7891]">Ofício</span>
+          <span className="font-medium text-[#0B1220]">{OFICIO_LABELS[oficio]}</span>
         </div>
         <div className="flex justify-between px-4 py-3">
-          <span className="text-muted-foreground">Prestador</span>
-          <span className="font-medium">{prestador.nome}</span>
+          <span className="text-[#6B7891]">Prestador</span>
+          <span className="font-medium text-[#0B1220]">{prestador.nome}</span>
         </div>
         <div className="flex justify-between px-4 py-3">
-          <span className="text-muted-foreground">Cliente</span>
-          <span className="font-medium">{cliente.nome}</span>
+          <span className="text-[#6B7891]">Cliente</span>
+          <span className="font-medium text-[#0B1220]">{cliente.nome}</span>
         </div>
         <div className="flex justify-between px-4 py-3">
-          <span className="text-muted-foreground">
+          <span className="text-[#6B7891]">
             {servicos.modo === "wizard" ? "Itens de serviço" : "Modo"}
           </span>
-          <span className="font-medium">
+          <span className="font-medium text-[#0B1220]">
             {servicos.modo === "wizard"
               ? `${itensAtivos.length} item${itensAtivos.length !== 1 ? "s" : ""}`
               : "Preço fechado"}
@@ -123,17 +125,17 @@ export function Preview({ oficio, prestador, cliente, servicos, condicoes }: Pro
         </div>
         {condicoes.pagamento && (
           <div className="flex justify-between px-4 py-3">
-            <span className="text-muted-foreground">Pagamento</span>
-            <span className="font-medium text-right max-w-[60%]">{condicoes.pagamento}</span>
+            <span className="text-[#6B7891]">Pagamento</span>
+            <span className="font-medium text-[#0B1220] text-right max-w-[60%]">{condicoes.pagamento}</span>
           </div>
         )}
         <div className="flex justify-between px-4 py-3">
-          <span className="text-muted-foreground">Validade</span>
-          <span className="font-medium">{condicoes.validadeDias} dias</span>
+          <span className="text-[#6B7891]">Validade</span>
+          <span className="font-medium text-[#0B1220]">{condicoes.validadeDias} dias</span>
         </div>
-        <div className="flex justify-between px-4 py-3 bg-primary/5 rounded-b-xl">
-          <span className="font-semibold">Total</span>
-          <span className="font-bold text-primary text-base">{formatBRL(total)}</span>
+        <div className="flex justify-between px-4 py-3 bg-[#EEF3FF] rounded-b-xl">
+          <span className="font-semibold text-[#0B1220]">Total</span>
+          <span className="font-newsreader font-semibold text-[#1E5BE6] text-lg">{formatBRL(total)}</span>
         </div>
       </div>
 
@@ -141,7 +143,7 @@ export function Preview({ oficio, prestador, cliente, servicos, condicoes }: Pro
         onClick={handleGerar}
         disabled={loading || gerado}
         size="lg"
-        className="w-full text-base"
+        className="w-full text-base rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold h-12 shadow-[0_12px_28px_rgba(30,91,230,0.28)]"
       >
         {loading ? "Gerando PDF…" : gerado ? "Redirecionando…" : "⬇ Baixar orçamento em PDF"}
       </Button>

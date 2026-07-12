@@ -103,10 +103,10 @@ export function DemoWizard() {
               className={cn(
                 "flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                 i < stepIndex
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-[#1E5BE6] text-white"
                   : i === stepIndex
-                  ? "bg-primary text-primary-foreground ring-2 ring-primary/30 ring-offset-2"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-[#1E5BE6] text-white ring-2 ring-[#1E5BE6]/25 ring-offset-2"
+                  : "bg-[#F1F4F9] text-[#9AA7BD]"
               )}
             >
               {i < stepIndex ? "✓" : i + 1}
@@ -115,7 +115,7 @@ export function DemoWizard() {
               <div
                 className={cn(
                   "h-0.5 w-5 rounded-full transition-colors",
-                  i < stepIndex ? "bg-primary" : "bg-muted"
+                  i < stepIndex ? "bg-[#1E5BE6]" : "bg-[#F1F4F9]"
                 )}
               />
             )}
@@ -124,7 +124,7 @@ export function DemoWizard() {
       </div>
 
       {/* Step label */}
-      <p className="text-center text-xs text-muted-foreground mb-6 uppercase tracking-wider font-medium">
+      <p className="text-center text-[11.5px] text-[#9AA7BD] mb-6 uppercase tracking-[0.06em] font-semibold">
         Passo {stepIndex + 1} de {STEPS.length} — {STEPS[stepIndex].label}
       </p>
 
@@ -177,17 +177,28 @@ export function DemoWizard() {
             variant="outline"
             onClick={goBack}
             disabled={stepIndex === 0}
+            className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF] px-5 h-10"
           >
             Voltar
           </Button>
-          <Button type="button" onClick={goNext} disabled={!canGoNext}>
+          <Button
+            type="button"
+            onClick={goNext}
+            disabled={!canGoNext}
+            className="rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold px-6 h-10 shadow-[0_10px_24px_rgba(30,91,230,0.24)]"
+          >
             {stepIndex === STEP_ORDER.length - 2 ? "Ver resumo" : "Próximo"}
           </Button>
         </div>
       )}
       {isLastStep && (
         <div className="flex justify-start mt-8">
-          <Button type="button" variant="outline" onClick={goBack}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={goBack}
+            className="rounded-full border-[#E1E8F5] text-[#334155] hover:bg-[#F7FAFF] px-5 h-10"
+          >
             Voltar e editar
           </Button>
         </div>

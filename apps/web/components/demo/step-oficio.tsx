@@ -20,8 +20,10 @@ export function StepOficio({ value, onChange }: Props) {
   return (
     <div className="flex flex-col gap-3">
       <div className="mb-2">
-        <h2 className="text-xl font-semibold">Qual é o seu ofício?</h2>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h2 className="font-newsreader text-[22px] font-medium tracking-[-0.01em] text-[#0B1220]">
+          Qual é o seu ofício?
+        </h2>
+        <p className="text-[14px] text-[#6B7891] mt-1">
           Vamos pré-preencher os serviços mais comuns para você.
         </p>
       </div>
@@ -32,16 +34,16 @@ export function StepOficio({ value, onChange }: Props) {
             type="button"
             onClick={() => onChange(o.value)}
             className={cn(
-              "flex items-center gap-4 rounded-lg border-2 p-4 text-left transition-all hover:border-primary hover:bg-primary/5",
+              "flex items-center gap-4 rounded-xl border-2 p-4 text-left transition-all hover:border-[#1E5BE6] hover:bg-[#F7FAFF]",
               value === o.value
-                ? "border-primary bg-primary/5"
-                : "border-border bg-card"
+                ? "border-[#1E5BE6] bg-[#EEF3FF]"
+                : "border-[#EEF2F9] bg-white"
             )}
           >
             <span className="text-3xl">{o.emoji}</span>
             <div>
-              <p className="font-semibold text-sm">{o.label}</p>
-              <p className="text-xs text-muted-foreground">{o.sub}</p>
+              <p className="font-semibold text-sm text-[#0B1220]">{o.label}</p>
+              <p className="text-xs text-[#6B7891]">{o.sub}</p>
             </div>
           </button>
         ))}
