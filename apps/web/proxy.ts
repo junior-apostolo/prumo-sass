@@ -5,7 +5,7 @@ const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password
 const PUBLIC_ROUTES = ["/demo"];
 const STATIC_PUBLIC_PREFIXES = ["/api/auth", "/api/demo", "/_next", "/favicon.ico"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (STATIC_PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))) {
