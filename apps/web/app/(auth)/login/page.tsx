@@ -8,7 +8,6 @@ import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -31,58 +30,66 @@ export default function LoginPage() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Entrar</CardTitle>
-        <CardDescription>Acesse sua conta PRUMO</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="voce@exemplo.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Senha</Label>
-              <Link
-                href="/forgot-password"
-                className="text-xs text-muted-foreground hover:underline"
-              >
-                Esqueci minha senha
-              </Link>
-            </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Entrando…" : "Entrar"}
-          </Button>
-          <p className="text-sm text-muted-foreground text-center">
-            Não tem conta?{" "}
-            <Link href="/register" className="font-medium hover:underline">
-              Criar conta
+    <div>
+      <h1 className="font-newsreader text-[26px] font-medium tracking-[-0.01em] text-[#0B1220]">
+        Entrar
+      </h1>
+      <p className="text-[14px] text-[#6B7891] mt-1">Acesse sua conta PRUMO</p>
+
+      <form onSubmit={handleSubmit} className="mt-7 flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="email" className="text-[13px] font-medium text-[#334155]">
+            Email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="voce@exemplo.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
+          />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-[13px] font-medium text-[#334155]">
+              Senha
+            </Label>
+            <Link
+              href="/forgot-password"
+              className="text-[12.5px] text-[#1E5BE6] font-medium hover:underline"
+            >
+              Esqueci minha senha
             </Link>
-          </p>
-        </CardFooter>
+          </div>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
+          />
+        </div>
+
+        <Button
+          type="submit"
+          disabled={loading}
+          className="h-11 rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold text-[15px] shadow-[0_10px_24px_rgba(30,91,230,0.28)] mt-2"
+        >
+          {loading ? "Entrando…" : "Entrar"}
+        </Button>
+        <p className="text-[13.5px] text-[#6B7891] text-center">
+          Não tem conta?{" "}
+          <Link href="/register" className="font-semibold text-[#1E5BE6] hover:underline">
+            Criar conta
+          </Link>
+        </p>
       </form>
-    </Card>
+    </div>
   );
 }
