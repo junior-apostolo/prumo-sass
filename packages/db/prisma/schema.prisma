@@ -23,8 +23,9 @@ model Workspace {
   endereco     String?
   createdAt    DateTime @default(now())
 
-  users  User[]
-  obras  Obra[]
+  users               User[]
+  obras               Obra[]
+  orcamentoRapidoLogs OrcamentoRapidoLog[]
 }
 
 model User {
@@ -151,4 +152,16 @@ model Gasto {
   fornecedor  String?
   comprovante String?
   createdAt   DateTime      @default(now())
+}
+
+// ─── Orçamento Rápido — registro leve (sem itens, sem PDF) ────────────────────
+
+model OrcamentoRapidoLog {
+  id          String    @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  clienteNome String
+  oficio      String
+  valorTotal  Decimal   @db.Decimal(12, 2)
+  createdAt   DateTime  @default(now())
 }
