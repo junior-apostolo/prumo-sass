@@ -142,6 +142,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   footerLeft: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#ffffff" },
+  footerCenter: { fontSize: 6.5, color: BLUE_LIGHT },
   footerRight: { fontSize: 7.5, color: BLUE_LIGHT },
 });
 
@@ -322,6 +323,7 @@ export function OrcamentoRapidoPdf({ input }: Props) {
         {/* ── Footer ── */}
         <View style={styles.footer} fixed>
           <Text style={styles.footerLeft}>{nomeEmpresa}</Text>
+          <Text style={styles.footerCenter}>Gerado com PRUMO</Text>
           {footerContatos ? (
             <Text style={styles.footerRight}>{footerContatos}</Text>
           ) : null}
