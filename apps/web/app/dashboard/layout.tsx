@@ -19,8 +19,8 @@ function PrumoIcon() {
 }
 
 const NAV_LINKS = [
-  { href: "/dashboard/obras", label: "Obras", icon: Building2 },
   { href: "/dashboard/orcamentos/rapido", label: "Orçamento Rápido", icon: FileText },
+  { href: "/dashboard/obras", label: "Obras", icon: Building2 },
   { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
 ];
 
@@ -89,7 +89,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-white">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex fixed inset-y-0 left-0 z-20 w-[248px] flex-col border-r border-[#EEF2F9] bg-white px-4 py-6">
-        <Link href="/dashboard/obras" className="flex items-center gap-2 px-2 pb-6 no-underline">
+        <Link href="/dashboard/orcamentos/rapido" className="flex items-center gap-2 px-2 pb-6 no-underline">
           <PrumoIcon />
           <span className="font-newsreader text-[19px] font-semibold tracking-[-0.01em] text-[#0B1220]">
             PRUMO
@@ -103,7 +103,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Mobile top bar */}
       <header className="lg:hidden sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-[#EEF2F9] bg-white/90 backdrop-blur px-4">
-        <Link href="/dashboard/obras" className="flex items-center gap-2 no-underline">
+        <Link href="/dashboard/orcamentos/rapido" className="flex items-center gap-2 no-underline">
           <PrumoIcon />
           <span className="font-newsreader text-[17px] font-semibold tracking-[-0.01em] text-[#0B1220]">
             PRUMO
