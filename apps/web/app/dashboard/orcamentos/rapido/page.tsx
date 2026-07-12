@@ -116,7 +116,8 @@ export default function OrcamentoRapidoPage() {
     if (!payload) return null;
     const blob = await orcamentosApi.gerarRapido(payload);
     const hoje = new Date().toISOString().slice(0, 10);
-    return { blob, filename: `orcamento-rapido-${hoje}.pdf` };
+    const slugCliente = slugifyNome(clienteNome) || "cliente";
+    return { blob, filename: `orcamento-${slugCliente}-${hoje}.pdf` };
   }
 
   async function handleGerar() {
