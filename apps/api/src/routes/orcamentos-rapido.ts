@@ -3,7 +3,20 @@ import { z } from "zod";
 import { authenticate } from "../middlewares/authenticate.js";
 import { prisma } from "../lib/prisma.js";
 import { renderOrcamentoRapidoToBuffer } from "../pdf/orcamento-rapido.js";
+import { OrcamentoRapidoLogRepository } from "../repositories/orcamento-rapido-log.repository.js";
 import type { OrcamentoRapidoPayload } from "@enge-pro/shared";
+
+const orcamentoRapidoLogRepository = new OrcamentoRapidoLogRepository();
+
+function calcularValorTotal(payload: OrcamentoRapidoPayload): number {
+  if (payload.modoServico === "verba") {
+    return payload.verba?.valorTotal ?? 0;
+  }
+  return (payload.itens ?? []).reduce(
+    (acc, item) => acc + item.quantidade * item.valorUnitario,
+    0,
+  );
+}
 
 const OFICIOS = ["PINTURA", "ELETRICA", "REVESTIMENTO", "HIDRAULICA", "OUTRO"] as const;
 
@@ -124,10 +137,19 @@ export async function orcamentosRapidoRoutes(app: FastifyInstance) {
       }
 
       try {
-        const buffer = await renderOrcamentoRapidoToBuffer({
-          payload: parse.data as OrcamentoRapidoPayload,
-          workspace,
-        });
+        const payload = parse.data as OrcamentoRapidoPayload;
+        const buffer = await renderOrcamentoRapidoToBuffer({ payload, workspace });
+
+        try {
+          await orcamentoRapidoLogRepository.create(req.user.workspaceId, {
+            clienteNome: payload.cliente.nome,
+            oficio: payload.oficio,
+            valorTotal: calcularValorTotal(payload),
+          });
+        } catch (logErr) {
+          // Log auxiliar — nao pode bloquear a entrega do PDF ja gerado.
+          app.log.error(logErr, "Erro ao registrar log do orcamento rapido");
+        }
 
         return reply
           .header("Content-Type", "application/pdf")
@@ -138,6 +160,37 @@ export async function orcamentosRapidoRoutes(app: FastifyInstance) {
         app.log.error(err, "Erro ao gerar PDF rápido");
         return reply.code(500).send({ error: "Erro ao gerar o PDF. Tente novamente." });
       }
+    },
+  );
+
+  app.get(
+    "/orcamentos/rapido/historico",
+    {
+      preHandler: authenticate,
+      schema: {
+        tags: ["Orçamentos"],
+        summary: "Listar os últimos orçamentos rápidos gerados pelo workspace",
+        security: [{ bearerAuth: [] }],
+        response: {
+          200: {
+            description: "Lista dos últimos orçamentos rápidos",
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string" },
+                clienteNome: { type: "string" },
+                oficio: { type: "string" },
+                valorTotal: { type: "string" },
+                createdAt: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (req) => {
+      return orcamentoRapidoLogRepository.listRecent(req.user.workspaceId);
     },
   );
 }

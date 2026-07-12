@@ -5,7 +5,7 @@ export interface OrcamentoRapidoLogRecord {
   clienteNome: string;
   oficio: string;
   valorTotal: string;
-  createdAt: Date;
+  createdAt: string;
 }
 
 export interface CreateOrcamentoRapidoLogData {
@@ -26,7 +26,7 @@ function toRecord(l: {
     clienteNome: l.clienteNome,
     oficio: l.oficio,
     valorTotal: String(l.valorTotal),
-    createdAt: l.createdAt,
+    createdAt: l.createdAt.toISOString(),
   };
 }
 
