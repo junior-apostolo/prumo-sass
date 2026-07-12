@@ -147,7 +147,7 @@ export default function ObraDetailPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[12.5px] font-semibold text-[#1E5BE6] hover:underline"
+                className="inline-flex items-center py-1.5 text-[12.5px] font-semibold text-[#1E5BE6] hover:underline"
               >
                 Quer mais controle? Fale sobre o Pro
               </a>
@@ -231,14 +231,14 @@ export default function ObraDetailPage() {
       <div className="rounded-2xl border border-[#EEF2F9] shadow-[0_10px_30px_rgba(20,50,120,0.06)] grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-[#EEF2F9]">
         <div className="px-5 py-4">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Contratado</p>
-          <p className="font-newsreader text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+          <p className="font-newsreader text-[17px] sm:text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums whitespace-nowrap">
             {formatCurrency(obra.valorContrato)}
           </p>
         </div>
 
         <div className="px-5 py-4">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Total orçado</p>
-          <p className="font-newsreader text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+          <p className="font-newsreader text-[17px] sm:text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums whitespace-nowrap">
             {formatCurrency(obra.totalOrcado)}
           </p>
         </div>
@@ -246,7 +246,7 @@ export default function ObraDetailPage() {
         <div className="px-5 py-4">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Total gasto</p>
           <p
-            className={`font-newsreader text-[21px] font-semibold mt-1 tabular-nums ${
+            className={`font-newsreader text-[17px] sm:text-[21px] font-semibold mt-1 tabular-nums whitespace-nowrap ${
               alerta ? "text-[#C8434F]" : "text-[#0B1220]"
             }`}
           >
@@ -261,7 +261,7 @@ export default function ObraDetailPage() {
 
         <div className="px-5 py-4">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[#9AA7BD]">Saldo</p>
-          <p className="font-newsreader text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums">
+          <p className="font-newsreader text-[17px] sm:text-[21px] font-semibold text-[#0B1220] mt-1 tabular-nums whitespace-nowrap">
             {formatCurrency(obra.saldo)}
           </p>
         </div>
@@ -295,7 +295,7 @@ export default function ObraDetailPage() {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-[#F7FAFF] cursor-pointer transition-colors"
                 onClick={() => router.push(`/dashboard/orcamentos/${orc.id}`)}
               >
-                <span className="font-medium flex-1 text-[#0B1220] text-[14px]">{orc.titulo}</span>
+                <span className="font-medium flex-1 min-w-0 truncate text-[#0B1220] text-[14px]">{orc.titulo}</span>
                 <span className="text-xs text-[#9AA7BD]">v{orc.versao}</span>
                 <OrcamentoStatusBadge status={orc.status} />
                 <span className="text-sm text-[#6B7891] w-24 text-right tabular-nums">
@@ -356,7 +356,7 @@ export default function ObraDetailPage() {
                 className="flex items-center gap-3 px-4 py-3 hover:bg-[#F7FAFF] cursor-pointer transition-colors"
                 onClick={() => router.push(`/dashboard/obras/${obra.id}/gastos`)}
               >
-                <span className="font-medium flex-1 text-[#0B1220] text-[14px]">{g.descricao}</span>
+                <span className="font-medium flex-1 min-w-0 truncate text-[#0B1220] text-[14px]">{g.descricao}</span>
                 <span className="text-xs text-[#9AA7BD]">{CATEGORIA_LABELS[g.categoria]}</span>
                 <span className="text-sm font-medium text-[#0B1220] tabular-nums">
                   {parseFloat(g.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}

@@ -13,7 +13,7 @@ const inputClass =
   "h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15";
 const labelClass = "text-[13px] font-medium text-[#334155]";
 const primaryBtnClass =
-  "rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_10px_24px_rgba(30,91,230,0.24)] h-10 px-5";
+  "rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_10px_24px_rgba(30,91,230,0.24)] h-11 px-5 w-full sm:w-auto";
 
 function Section({
   title,

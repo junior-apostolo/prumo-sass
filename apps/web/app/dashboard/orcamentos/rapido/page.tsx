@@ -171,7 +171,7 @@ export default function OrcamentoRapidoPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto pb-32">
+    <div className="max-w-2xl mx-auto pb-40 sm:pb-32">
       <div>
         <h1 className="font-newsreader text-[26px] font-medium tracking-[-0.01em] text-[#0B1220]">
           Orçamento Rápido
@@ -249,8 +249,8 @@ export default function OrcamentoRapidoPage() {
 
       {/* ── Barra fixa de total + ação ── */}
       {oficio && (
-        <div className="fixed bottom-0 left-0 right-0 border-t border-[#EEF2F9] bg-white/95 backdrop-blur-sm px-6 py-4 shadow-[0_-8px_30px_rgba(20,50,120,0.08)]">
-          <div className="max-w-2xl mx-auto flex items-center justify-between gap-4">
+        <div className="fixed bottom-0 left-0 right-0 border-t border-[#EEF2F9] bg-white/95 backdrop-blur-sm px-4 sm:px-6 py-3 sm:py-4 shadow-[0_-8px_30px_rgba(20,50,120,0.08)]">
+          <div className="max-w-2xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
               <p className="text-[11.5px] uppercase tracking-[0.06em] font-semibold text-[#9AA7BD]">
                 Total estimado
@@ -265,16 +265,16 @@ export default function OrcamentoRapidoPage() {
                 variant="outline"
                 onClick={handleEnviarWhatsApp}
                 disabled={!isValid() || isSharing}
-                className="rounded-full border-[#25D366]/40 text-[#128C4A] hover:bg-[#25D366]/10 font-semibold"
+                className="flex-1 sm:flex-none min-h-11 rounded-full border-[#25D366]/40 text-[#128C4A] hover:bg-[#25D366]/10 font-semibold"
               >
-                <MessageCircle className="size-4 mr-1.5" />
-                {isSharing ? "Preparando..." : "Enviar por WhatsApp"}
+                <MessageCircle className="size-4 mr-1.5 shrink-0" />
+                <span className="truncate">{isSharing ? "Preparando..." : "Enviar por WhatsApp"}</span>
               </Button>
               <Button
                 size="lg"
                 onClick={handleGerar}
                 disabled={!isValid() || isLoading}
-                className="min-w-36 rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_10px_24px_rgba(30,91,230,0.28)]"
+                className="flex-1 sm:flex-none min-h-11 sm:min-w-36 rounded-full bg-[#1E5BE6] hover:bg-[#1a4ed4] text-white font-semibold shadow-[0_10px_24px_rgba(30,91,230,0.28)]"
               >
                 {isLoading ? "Gerando PDF..." : "Gerar PDF"}
               </Button>
