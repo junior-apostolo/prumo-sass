@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import {
   type ServicoState,
 } from "@/components/demo/step-servicos";
 import { StepCondicoes } from "@/components/demo/step-condicoes";
-import { orcamentosApi } from "@/lib/orcamentos";
+import { orcamentosApi, type OrcamentoRapidoLogItem } from "@/lib/orcamentos";
 import { downloadBlob } from "@/lib/demo-api";
 import { formatTelefone } from "@enge-pro/shared";
 import type { TipoOficio } from "@enge-pro/shared";
@@ -26,6 +26,23 @@ function slugifyNome(nome: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
+}
+
+const OFICIO_LABELS: Record<string, string> = {
+  PINTURA: "Pintura",
+  ELETRICA: "Elétrica",
+  REVESTIMENTO: "Piso / Revestimento",
+  HIDRAULICA: "Hidráulica",
+  OUTRO: "Serviços Gerais",
+};
+
+function formatDataHistorico(iso: string): string {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(iso));
 }
 
 type Condicoes = { pagamento: string; validadeDias: number; observacoes: string };
@@ -45,6 +62,35 @@ export default function OrcamentoRapidoPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [generatedFile, setGeneratedFile] = useState<GeneratedFile | null>(null);
+  const [historico, setHistorico] = useState<OrcamentoRapidoLogItem[]>([]);
+  const [loadingHistorico, setLoadingHistorico] = useState(true);
+
+  async function carregarHistorico() {
+    try {
+      const lista = await orcamentosApi.listarHistoricoRapido();
+      setHistorico(lista);
+    } catch {
+      // Falha silenciosa — histórico é só um painel de controle, não pode travar a tela.
+    }
+  }
+
+  useEffect(() => {
+    orcamentosApi
+      .listarHistoricoRapido()
+      .then(setHistorico)
+      .catch(() => {})
+      .finally(() => setLoadingHistorico(false));
+  }, []);
+
+  function resetForm() {
+    setOficio(null);
+    setServicos(null);
+    setClienteNome("");
+    setClienteEndereco("");
+    setClienteTelefone("");
+    setCondicoes({ pagamento: "", validadeDias: 15, observacoes: "" });
+    setGeneratedFile(null);
+  }
 
   function handleOficioChange(novoOficio: TipoOficio) {
     setOficio(novoOficio);
@@ -126,7 +172,9 @@ export default function OrcamentoRapidoPage() {
       const file = await gerarPdf();
       if (!file) return;
       downloadBlob(file.blob, file.filename);
-      setGeneratedFile(file);
+      toast.success("PDF gerado e baixado com sucesso");
+      resetForm();
+      carregarHistorico();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao gerar o PDF. Tente novamente.");
     } finally {
@@ -151,8 +199,11 @@ export default function OrcamentoRapidoPage() {
       if (canShareFile) {
         try {
           await navigator.share({ files: [pdfFile], title: "Orçamento" });
+          toast.success("Orçamento compartilhado com sucesso");
+          resetForm();
+          carregarHistorico();
         } catch {
-          // Usuário cancelou o menu de compartilhamento — não é um erro.
+          // Usuário cancelou o menu de compartilhamento — não é um erro, não reseta.
         }
         return;
       }
@@ -162,7 +213,9 @@ export default function OrcamentoRapidoPage() {
       const text = encodeURIComponent("Segue o orçamento — anexe o PDF que acabou de baixar.");
       const waUrl = digits ? `https://wa.me/55${digits}?text=${text}` : `https://wa.me/?text=${text}`;
       window.open(waUrl, "_blank");
-      toast.info("PDF baixado — anexe o arquivo na conversa do WhatsApp que abrimos.");
+      toast.success("PDF baixado — anexe o arquivo na conversa do WhatsApp que abrimos.");
+      resetForm();
+      carregarHistorico();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao preparar envio pelo WhatsApp.");
     } finally {
@@ -179,6 +232,37 @@ export default function OrcamentoRapidoPage() {
         <p className="text-[#6B7891] text-[13.5px] mt-1">
           Gere um PDF profissional com os preços do seu segmento. Nada é salvo.
         </p>
+      </div>
+
+      {/* ── Últimos orçamentos (controle) ── */}
+      <div className="mt-8 pt-8 border-t border-[#EEF2F9] first:mt-6 first:pt-0 first:border-t-0">
+        <h2 className="font-newsreader text-[20px] font-medium tracking-[-0.01em] text-[#0B1220]">
+          Últimos orçamentos
+        </h2>
+        {loadingHistorico ? (
+          <div className="mt-3 h-10 bg-[#F1F4F9] animate-pulse rounded-xl" />
+        ) : historico.length === 0 ? (
+          <p className="mt-2 text-sm text-[#6B7891]">Nenhum orçamento gerado ainda.</p>
+        ) : (
+          <div className="rounded-2xl border border-[#EEF2F9] divide-y divide-[#EEF2F9] overflow-hidden mt-3">
+            {historico.map((item) => (
+              <div key={item.id} className="flex items-center gap-3 px-4 py-3">
+                <span className="font-medium flex-1 min-w-0 truncate text-[#0B1220] text-[14px]">
+                  {item.clienteNome}
+                </span>
+                <span className="text-xs text-[#9AA7BD] whitespace-nowrap">
+                  {OFICIO_LABELS[item.oficio] ?? item.oficio}
+                </span>
+                <span className="text-sm font-medium text-[#0B1220] tabular-nums whitespace-nowrap">
+                  {formatBRL(parseFloat(item.valorTotal))}
+                </span>
+                <span className="text-xs text-[#9AA7BD] whitespace-nowrap">
+                  {formatDataHistorico(item.createdAt)}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── 1. Ofício ── */}
