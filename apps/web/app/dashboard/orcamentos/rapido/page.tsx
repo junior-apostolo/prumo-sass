@@ -15,7 +15,18 @@ import {
 import { StepCondicoes } from "@/components/demo/step-condicoes";
 import { orcamentosApi } from "@/lib/orcamentos";
 import { downloadBlob } from "@/lib/demo-api";
+import { formatTelefone } from "@enge-pro/shared";
 import type { TipoOficio } from "@enge-pro/shared";
+
+function slugifyNome(nome: string): string {
+  return nome
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
 
 type Condicoes = { pagamento: string; validadeDias: number; observacoes: string };
 type GeneratedFile = { blob: Blob; filename: string };
@@ -221,7 +232,7 @@ export default function OrcamentoRapidoPage() {
               id="cliente-telefone"
               placeholder="Ex: (11) 91234-5678"
               value={clienteTelefone}
-              onChange={(e) => setClienteTelefone(e.target.value)}
+              onChange={(e) => setClienteTelefone(formatTelefone(e.target.value))}
               className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
             />
           </div>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { settingsApi, type WorkspaceSettings } from "@/lib/settings";
+import { formatCnpj, formatEmail, formatTelefone } from "@enge-pro/shared";
 
 const inputClass =
   "h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15";
@@ -89,7 +90,7 @@ function PerfilSection() {
             id="email"
             type="email"
             value={form.email}
-            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+            onChange={(e) => setForm((f) => ({ ...f, email: formatEmail(e.target.value) }))}
             required
             className={inputClass}
           />
@@ -239,7 +240,7 @@ function EmpresaSection({ workspace, onSave }: {
   function field(
     id: keyof typeof form,
     label: string,
-    opts?: { type?: string; placeholder?: string },
+    opts?: { type?: string; placeholder?: string; format?: (v: string) => string },
   ) {
     return (
       <div className="flex flex-col gap-1.5">
@@ -249,7 +250,11 @@ function EmpresaSection({ workspace, onSave }: {
           type={opts?.type ?? "text"}
           placeholder={opts?.placeholder}
           value={form[id]}
-          onChange={(e) => setForm((f) => ({ ...f, [id]: e.target.value }))}
+          onChange={(e) => {
+            const raw = e.target.value;
+            const value = opts?.format ? opts.format(raw) : raw;
+            setForm((f) => ({ ...f, [id]: value }));
+          }}
           className={inputClass}
         />
       </div>
@@ -261,9 +266,9 @@ function EmpresaSection({ workspace, onSave }: {
       <form onSubmit={handleSave} className="flex flex-col gap-4">
         {field("name", "Nome da empresa *")}
         {field("razaoSocial", "Razão social", { placeholder: "Nome jurídico da empresa" })}
-        {field("cnpj", "CNPJ", { placeholder: "00.000.000/0000-00" })}
-        {field("telefone", "Telefone", { placeholder: "(00) 00000-0000" })}
-        {field("emailContato", "Email de contato", { type: "email" })}
+        {field("cnpj", "CNPJ", { placeholder: "00.000.000/0000-00", format: formatCnpj })}
+        {field("telefone", "Telefone", { placeholder: "(00) 00000-0000", format: formatTelefone })}
+        {field("emailContato", "Email de contato", { type: "email", format: formatEmail })}
         {field("endereco", "Endereço")}
         <div>
           <Button type="submit" disabled={saving} className={primaryBtnClass}>

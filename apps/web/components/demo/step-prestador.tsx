@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { formatCpfCnpj, formatTelefone } from "@enge-pro/shared";
 
 interface Prestador {
   nome: string;
@@ -51,7 +52,7 @@ export function StepPrestador({ value, onChange }: Props) {
           id="prest-cpf"
           placeholder="000.000.000-00 ou 00.000.000/0001-00"
           value={value.cpfCnpj}
-          onChange={(e) => set("cpfCnpj", e.target.value)}
+          onChange={(e) => set("cpfCnpj", formatCpfCnpj(e.target.value))}
           className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
         />
         <p className="text-xs text-[#9AA7BD]">
@@ -67,7 +68,7 @@ export function StepPrestador({ value, onChange }: Props) {
           id="prest-tel"
           placeholder="(11) 99999-9999"
           value={value.telefone}
-          onChange={(e) => set("telefone", e.target.value)}
+          onChange={(e) => set("telefone", formatTelefone(e.target.value))}
           className="h-11 rounded-xl border-[#E1E8F5] px-3.5 focus-visible:border-[#1E5BE6] focus-visible:ring-[#1E5BE6]/15"
         />
       </div>
