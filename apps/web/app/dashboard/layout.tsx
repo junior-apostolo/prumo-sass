@@ -71,9 +71,19 @@ function UserFooter({ name, onLogout }: { name?: string; onLogout: () => void })
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, logout } = useAuth();
+  const { user, logout, loading } = useAuth();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="animate-pulse">
+          <PrumoIcon />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
