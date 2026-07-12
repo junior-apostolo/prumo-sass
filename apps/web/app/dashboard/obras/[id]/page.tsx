@@ -47,6 +47,8 @@ function formatPercent(value: number | null) {
   return `${value.toFixed(1)}%`;
 }
 
+const UPGRADE_WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_UPGRADE_WHATSAPP_NUMBER;
+
 export default function ObraDetailPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -137,6 +139,18 @@ export default function ObraDetailPage() {
               <Badge className="bg-[#FBE9EA] text-[#C8434F] hover:bg-[#FBE9EA] rounded-full border-transparent">
                 Atenção: {percentual} consumido
               </Badge>
+            )}
+            {alerta && UPGRADE_WHATSAPP_NUMBER && (
+              <a
+                href={`https://wa.me/${UPGRADE_WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                  "Quero saber mais sobre o PRUMO Pro e alertas de orçamento.",
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[12.5px] font-semibold text-[#1E5BE6] hover:underline"
+              >
+                Quer mais controle? Fale sobre o Pro
+              </a>
             )}
           </div>
           {obra.cliente && <p className="text-[#334155]">{obra.cliente}</p>}
