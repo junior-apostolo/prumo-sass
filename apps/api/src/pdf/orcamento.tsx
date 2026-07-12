@@ -10,6 +10,7 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import type { OrcamentoPdfData, ItemOrcamentoRecord, ItemCategoria } from "../interfaces/orcamento.interfaces.js";
+import { formatCnpj, formatEmail, formatTelefone } from "@enge-pro/shared";
 
 const BLUE = "#1e3a5f";
 const BLUE_LIGHT = "#e8f0fe";
@@ -185,7 +186,7 @@ export function OrcamentoPdf({ data }: Props) {
               <Text style={styles.workspaceName}>{workspace.name}</Text>
             )}
             {workspace.cnpj && (
-              <Text style={styles.workspaceSub}>CNPJ: {workspace.cnpj}</Text>
+              <Text style={styles.workspaceSub}>CNPJ: {formatCnpj(workspace.cnpj)}</Text>
             )}
           </View>
           <View style={styles.docInfo}>
@@ -298,7 +299,11 @@ export function OrcamentoPdf({ data }: Props) {
         <View style={styles.footer} fixed>
           <Text style={styles.footerLeft}>{workspace.name}</Text>
           <Text style={styles.footerRight}>
-            {[workspace.telefone, workspace.emailContato, workspace.cnpj]
+            {[
+              workspace.telefone ? formatTelefone(workspace.telefone) : null,
+              workspace.emailContato ? formatEmail(workspace.emailContato) : null,
+              workspace.cnpj ? formatCnpj(workspace.cnpj) : null,
+            ]
               .filter(Boolean)
               .join(" · ")}
           </Text>

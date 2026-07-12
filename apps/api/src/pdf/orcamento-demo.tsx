@@ -9,6 +9,7 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import type { DemoWizardPayload, DemoItemServico } from "@enge-pro/shared";
+import { formatCpfCnpj, formatTelefone } from "@enge-pro/shared";
 
 const BLUE = "#1e3a5f";
 const BLUE_LIGHT = "#e8f0fe";
@@ -330,10 +331,10 @@ export function OrcamentoDemoPdf({ payload }: Props) {
             <Text style={styles.partyLabel}>Prestador de serviço</Text>
             <Text style={styles.partyName}>{prestador.nome}</Text>
             {prestador.cpfCnpj && (
-              <Text style={styles.partyDetail}>CPF/CNPJ: {prestador.cpfCnpj}</Text>
+              <Text style={styles.partyDetail}>CPF/CNPJ: {formatCpfCnpj(prestador.cpfCnpj)}</Text>
             )}
             {prestador.telefone && (
-              <Text style={styles.partyDetail}>Tel: {prestador.telefone}</Text>
+              <Text style={styles.partyDetail}>Tel: {formatTelefone(prestador.telefone)}</Text>
             )}
             <Text style={styles.partyDetail}>
               Especialidade: {OFICIO_LABELS[oficio] ?? oficio}

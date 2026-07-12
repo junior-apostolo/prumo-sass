@@ -10,6 +10,7 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import type { OrcamentoRapidoPayload, OrcamentoRapidoItem } from "@enge-pro/shared";
+import { formatCnpj, formatEmail, formatTelefone } from "@enge-pro/shared";
 
 const BLUE = "#1e3a5f";
 const BLUE_LIGHT = "#e8f0fe";
@@ -208,7 +209,10 @@ export function OrcamentoRapidoPdf({ input }: Props) {
       ? (verba?.valorTotal ?? 0)
       : itens.reduce((acc, item) => acc + item.quantidade * item.valorUnitario, 0);
 
-  const footerContatos = [workspace.telefone, workspace.emailContato]
+  const footerContatos = [
+    workspace.telefone ? formatTelefone(workspace.telefone) : null,
+    workspace.emailContato ? formatEmail(workspace.emailContato) : null,
+  ]
     .filter(Boolean)
     .join(" · ");
 
@@ -228,7 +232,7 @@ export function OrcamentoRapidoPdf({ input }: Props) {
               <Text style={styles.workspaceName}>{nomeEmpresa}</Text>
             )}
             {workspace.cnpj && (
-              <Text style={styles.workspaceSub}>CNPJ: {workspace.cnpj}</Text>
+              <Text style={styles.workspaceSub}>CNPJ: {formatCnpj(workspace.cnpj)}</Text>
             )}
           </View>
           <View style={styles.docInfo}>
