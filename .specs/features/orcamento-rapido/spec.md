@@ -72,7 +72,7 @@ O PDF deve conter:
 ### Não-funcionais
 
 - Tempo de geração do PDF < 3s (p95)
-- PDF sem persistência no DB — transiente como `/demo/pdf`
+- PDF e itens sem persistência no DB — transiente como `/demo/pdf`. Desde 2026-07-12, um **registro-resumo leve** (cliente, ofício, valor total) é salvo por geração para alimentar o histórico de controle — ver `F-ORC-RAPIDO-HISTORICO`
 - Autenticação obrigatória: `authenticate` middleware na rota
 - Workspace isolation: carregar workspace via `req.user.workspaceId`, nunca via corpo da requisição
 
@@ -81,7 +81,7 @@ O PDF deve conter:
 ## Fora do Escopo
 
 - Salvar o orçamento rápido no banco (sem vínculo a obra) — isso seria uma mudança de schema (obraId opcional no Orcamento)
-- Histórico de orçamentos rápidos gerados
+- ~~Histórico de orçamentos rápidos gerados~~ — **superado em 2026-07-12** por `F-ORC-RAPIDO-HISTORICO` (`.specs/features/orcamento-rapido-historico/spec.md`): existe hoje um registro leve (cliente, ofício, valor total, data) via model `OrcamentoRapidoLog`, exibido como "Últimos orçamentos" na tela. Os **itens** e o **PDF em si continuam transientes** — não há re-download a partir do histórico.
 - Duplicação de orçamento rápido
 - Modo "verba" (preço fechado) — o formulário usa itens linha a linha apenas
 
