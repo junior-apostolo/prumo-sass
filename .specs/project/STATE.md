@@ -1,11 +1,26 @@
 # State
 
 **Last Updated:** 2026-07-12
-**Current Work:** Fase 6 — Polish e lançamento (próximo milestone). Pausa para implementar 2 features de growth (Orçamento Rápido como porta de entrada + CTA de upgrade no alerta financeiro) motivadas por pesquisa de mercado de 2026-07-12.
+**Current Work:** Fase 6 — Polish e lançamento (próximo milestone). Pausa para implementar 2 features de growth (Orçamento Rápido como porta de entrada + CTA de upgrade no alerta financeiro) motivadas por pesquisa de mercado de 2026-07-12, seguida da feature de máscaras de contato (telefone/CNPJ/CPF/email).
 
 ---
 
 ## Completed Milestones
+
+### Máscaras de Contato — telefone, CNPJ/CPF, email (concluído, 2026-07-12)
+
+**Spec:** `.specs/features/mascaras-contato/spec.md`
+**Commits:** `d574b3a` · `4d0c2c1` · `c702c7c` · `9f685fa`
+
+**Entregue:**
+- `packages/shared/src/index.ts` — `formatTelefone`, `formatCnpj`, `formatCpfCnpj`, `formatEmail`: funções puras e idempotentes (extraem dígitos antes de reformatar), reusadas por `apps/web` e `apps/api`
+- Máscaras aplicadas no `onChange` de: `components/demo/step-prestador.tsx` (cpfCnpj, telefone), `dashboard/configuracoes/page.tsx` (cnpj, telefone, emailContato da empresa; email do perfil), `dashboard/orcamentos/rapido/page.tsx` (telefone do cliente)
+- Formatação defensiva aplicada na renderização de `apps/api/src/pdf/orcamento-rapido.tsx`, `orcamento.tsx` e `orcamento-demo.tsx` (cobre registros salvos sem pontuação)
+- Nome do arquivo do PDF do Orçamento Rápido passa de `orcamento-rapido-AAAA-MM-DD.pdf` para `orcamento-<slug-do-cliente>-AAAA-MM-DD.pdf` (fallback `"cliente"` se o slug ficar vazio)
+
+**Sem pendências** — feature completa, sem itens deferred.
+
+---
 
 ### Growth — Orçamento Rápido como porta de entrada + CTA de upgrade (concluído P1, 2026-07-12)
 
