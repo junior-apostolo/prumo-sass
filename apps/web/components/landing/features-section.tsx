@@ -38,7 +38,7 @@ export function FeaturesSection() {
         </p>
       </AnimateIn>
 
-      <div className="grid mt-[46px] gap-5" style={{ gridTemplateColumns: "1.25fr 1fr" }}>
+      <div className="grid grid-cols-1 md:grid-cols-[1.25fr_1fr] mt-[46px] gap-5">
         {/* Large featured card */}
         <AnimateIn
           className="rounded-[20px] p-8 flex flex-col justify-between border border-[#DCE6FA]"

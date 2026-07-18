@@ -90,7 +90,7 @@ function TableRow({
 
 function AppMockup() {
   return (
-    <div className="bg-white border border-[#E6ECF7] rounded-[18px] shadow-[0_30px_80px_rgba(20,50,120,0.16)] overflow-hidden">
+    <div className="bg-white border border-[#E6ECF7] rounded-[18px] shadow-[0_30px_80px_rgba(20,50,120,0.16)] overflow-hidden min-w-[640px]">
       {/* Browser chrome */}
       <div className="flex items-center gap-[7px] px-[18px] py-[14px] border-b border-[#EEF2F9] bg-[#FBFCFE]">
         <span className="w-[11px] h-[11px] rounded-full bg-[#F1606A]" />
@@ -268,7 +268,7 @@ export function Hero() {
           </span>
           <button
             type="button"
-            className="w-[42px] h-[42px] rounded-[11px] bg-[#1E5BE6] inline-flex items-center justify-center shadow-[0_8px_18px_rgba(30,91,230,0.30)] flex-none border-none"
+            className="w-11 h-11 rounded-[11px] bg-[#1E5BE6] inline-flex items-center justify-center shadow-[0_8px_18px_rgba(30,91,230,0.30)] flex-none border-none"
           >
             <ArrowRight size={18} />
           </button>
@@ -280,7 +280,9 @@ export function Hero() {
         className="relative z-10 mx-auto max-w-[1080px] mt-[54px] px-8 animate-fade-up"
         style={{ animationDelay: "360ms", opacity: 0 }}
       >
-        <AppMockup />
+        <div className="overflow-x-auto">
+          <AppMockup />
+        </div>
       </section>
     </div>
   );
