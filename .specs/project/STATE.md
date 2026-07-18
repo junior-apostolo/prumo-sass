@@ -376,6 +376,15 @@
 
 ## Quick Tasks Completed
 
+### 003: Migrar config de deploy de Railway para Render (2026-07-18)
+
+**Motivo:** trial gratuito da Railway expirou. Decisão: usar Render (plano free) para `apps/api` + Postgres, reaproveitando o `Dockerfile` já existente (builder Docker, sem depender de `railpack.json`/`railway.json`, que foram mantidos no repo mas não são mais usados).
+**Criado:** `render.yaml` na raiz — Blueprint com `services` (web, `runtime: docker`, `healthCheckPath: /health`, plano free) + `databases` (Postgres, plano free). `DATABASE_URL` linkado via `fromDatabase`; `JWT_SECRET` gerado automaticamente via `generateValue: true`.
+**Alterado:** `.env.example` — comentário do `DATABASE_URL` deixou de citar Railway especificamente.
+**Pendente (ação manual do usuário, fora do que o Claude Code consegue fazer):** criar conta na Render, "New" → "Blueprint" apontando para este repo Git para provisionar os dois recursos.
+**Risco conhecido:** Postgres free da Render expira 30 dias após a criação (+ 14 dias de carência) e é apagado — sem backup automático nesse plano. Web service free "dorme" após 15 min sem tráfego. Documentado em comentário no topo do `render.yaml`. Se virar problema, trocar `plan: free` por `plan: starter` nos dois blocos.
+**Sem pendências de código** — apps/web (Vercel) continua não decidido; `CORS_ORIGIN`/`FRONTEND_URL` no `render.yaml` apontam para `localhost:3000` como placeholder até isso ser resolvido.
+
 ### 002: Corrigir erro de build no deploy Vercel — `style` ausente em `AnimateIn` (2026-07-03)
 
 **Bug:** deploy falhava em `next build` / TypeScript check: `apps/web/components/landing/features-section.tsx` passava `style={{...}}` para `<AnimateIn>`, mas o componente (`apps/web/components/landing/animate-in.tsx`) não aceitava essa prop. Introduzido no redesign da landing (commit `96ebcdf`).
@@ -406,7 +415,7 @@ Ver `.specs/quick/001-fix-demo-pdf-middleware/TASK.md`.
 
 - [x] Decidir nome do produto (DA-01) — RESOLVIDO
 - [ ] Decidir provedor de email (DA-05) — Resend recomendado — desbloqueador para B-002
-- [ ] Abrir conta no Railway e Vercel antes de iniciar Fase 6
+- [ ] Criar conta na Render e provisionar o Blueprint (`render.yaml`) — "New" → "Blueprint" apontando para este repo; abrir conta no Vercel antes de iniciar Fase 6 (apps/web ainda não deployado)
 - [ ] Abrir conta no Cloudflare R2 ou AWS S3 antes de T-098 (upload de logo)
 - [ ] Registrar domínio do PRUMO e definir `NEXT_PUBLIC_UPGRADE_WHATSAPP_NUMBER` — sem isso, o branding do PDF fica sem URL e o CTA de upgrade financeiro fica oculto
 - [ ] Escolher gateway de pagamento (Asaas/Pagar.me/Pix) — desbloqueia cobrança avulsa do Orçamento Rápido (v1.2) e feature-gating real do plano Pro

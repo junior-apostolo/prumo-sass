@@ -86,7 +86,7 @@
 - Sentry para captura de erros
 - Empty states e loading skeletons em todas as telas
 - Responsividade testada em 375px
-- Deploy: Railway (API + Postgres) + Vercel (frontend)
+- Deploy: Render (API + Postgres, `render.yaml`) + Vercel (frontend)
 - Landing page + Política de privacidade + Termos de uso (LGPD)
 
 ---

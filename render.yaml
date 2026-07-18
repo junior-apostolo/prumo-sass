@@ -1,0 +1,43 @@
+# Render Blueprint — apps/api (Fastify) + Postgres
+# Deploy: no dashboard da Render, "New" → "Blueprint" → conectar este repo.
+# Reusa o Dockerfile da raiz (mesma imagem usada antes no Railway).
+#
+# ATENÇÃO — plano free escolhido:
+# - Postgres free expira 30 dias após criação (+ 14 dias de carência para upgrade,
+#   depois disso os dados são apagados). Sem backup automático nesse plano.
+# - Web service free "dorme" após 15 min sem tráfego (cold start de ~30-50s no
+#   primeiro request depois disso).
+# Se isso virar problema (como aconteceu com o trial da Railway), migrar para os
+# planos pagos (Starter) é só trocar `plan: free` por `plan: starter` nos dois
+# blocos abaixo e reprovisionar.
+
+databases:
+  - name: prumo-db
+    plan: free
+    region: oregon
+    databaseName: prumo
+    user: prumo
+
+services:
+  - type: web
+    name: prumo-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: prumo-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+      # Trocar para a URL do apps/web em produção (Vercel) assim que ele for deployado.
+      - key: CORS_ORIGIN
+        value: http://localhost:3000
+      - key: FRONTEND_URL
+        value: http://localhost:3000
