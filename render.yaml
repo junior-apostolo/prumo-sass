@@ -38,6 +38,6 @@ services:
         value: production
       # Trocar para a URL do apps/web em produção (Vercel) assim que ele for deployado.
       - key: CORS_ORIGIN
-        value: http://localhost:3000
+        value: https://prumo-sass-web.vercel.app
       - key: FRONTEND_URL
-        value: http://localhost:3000
+        value: https://prumo-sass-web.vercel.app
